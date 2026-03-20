@@ -115,8 +115,8 @@ The optimal control problem under consideration is to find a control input $u$ t
 \end{equation}
 where $\phi_d$ is a given desired state and $\lambda > 0$ is a regularization parameter.
 When $\phi_d=0$, this problem is a special case of the classical linear quadratic regulator (LQR) problem for PDEs \cite{curtain2012introduction}.
-For $\Omega=\Omega_x \times \Omega_t$, where $\Omega_x = \RR^{n-1}$ and $\Omega_t = \RR_+$, explicit expressions for optimal control in the unbounded spatial domain have been derived in \cite{bamieh2002distributed}. 
-The one-dimensional case where $\Omega_x$ is a finite interval has also been studied in \cite{li2024complex}.
+For $\Omega=\Omega_x \times \Omega_t$, where $\Omega_x = \RR^{n-1}$ and $\Omega_t = \RR_+$, explicit expressions for optimal control in the whole real spatial domain have been derived in \cite{bamieh2002distributed}. 
+The one-dimensional case where $\Omega_x$ is a finite interval has been studied in \cite{li2024complex}.
 However, explicit expressions for optimal control in a general (potentially bounded) domain $\Omega$ are not readily available.
 This is relevant for many practical applications where the spatial domain is typically bounded.
 
@@ -332,21 +332,21 @@ In the following section, we present numerical experiments to show that introduc
    \caption{Comparison of the original MSE history between FNO Heat BC and FNO Heat BC Real Freq.}
 \end{figure}
 
-\begin{figure*}
-   \centering
-   \includegraphics[width=\textwidth]{fig/bc_example_0_comparison.png}
-   \caption{Numerical results for the one-dimensional heat equation.}
-\end{figure*}
-\begin{figure*}
-   \centering
-   \includegraphics[width=\textwidth]{fig/bc_example_24_comparison.png}
-   \caption{Numerical results for the one-dimensional heat equation.}
-\end{figure*}
-\begin{figure*}
-   \centering
-   \includegraphics[width=\textwidth]{fig/bc_example_49_comparison.png}
-   \caption{Numerical results for the one-dimensional heat equation.}
-\end{figure*}
+% \begin{figure*}
+%    \centering
+%    \includegraphics[width=\textwidth]{fig/bc_example_0_comparison.png}
+%    \caption{Numerical results for the one-dimensional heat equation.}
+% \end{figure*}
+% \begin{figure*}
+%    \centering
+%    \includegraphics[width=\textwidth]{fig/bc_example_24_comparison.png}
+%    \caption{Numerical results for the one-dimensional heat equation.}
+% \end{figure*}
+% \begin{figure*}
+%    \centering
+%    \includegraphics[width=\textwidth]{fig/bc_example_49_comparison.png}
+%    \caption{Numerical results for the one-dimensional heat equation.}
+% \end{figure*}
 \addtolength{\textheight}{-3cm}   % This command serves to balance the column lengths
                                   % on the last page of the document manually. It shortens
                                   % the textheight of the last page by a suitable amount.
