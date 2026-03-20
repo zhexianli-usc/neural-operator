@@ -1,0 +1,218 @@
+\pdfminorversion=4
+\usepackage{amsmath,amssymb,bbm,color,psfrag,amsfonts,mathtools,amsbsy}
+\usepackage{dsfont}
+\usepackage{graphicx,cuted}                       % \includegraphics
+%\usepackage[normalem]{ulem}    
+
+\usepackage{wrapfig}
+\usepackage{pdfpages}
+%\usepackage[ruled,lined]{algorithm2e} 
+%\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+%%\usepackage{algorithm}% http://ctan.org/pkg/algorithm
+%   \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+\usepackage{accents}
+\usepackage{lipsum}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{paralist}   % \begin{inparaenum}[1)]
+\usepackage{figlatex}
+\let\labelindent\relax
+\usepackage{enumitem}
+%
+%\usepackage{enumitem}
+%\setlist{parsep=0pt,listparindent=\parindent}
+
+% revision mode 
+%\usepackage{changes}
+%\definechangesauthor[name={Qin}, color=orange]{q}
+%\setremarkmarkup{(#2)}
+
+% table
+\usepackage{booktabs}  
+\usepackage{multirow}
+\usepackage[normalem]{ulem}
+
+% caption
+\usepackage{caption}
+%\captionsetup{width=2.0\columnwidth}
+\usepackage{subcaption}
+
+\usepackage{cite}
+\usepackage[pdftex,pdfpagelabels,bookmarks,hyperindex,hyperfigures]{hyperref}
+
+
+
+% algorithm
+%\usepackage{algorithmic}
+%\usepackage{algorithm}
+% theorem environment. 
+%\theoremstyle{plain} 
+
+%\newenvironment{problem}[1][htb]
+%  {\renewcommand{\algorithmcfname}{Problem}% Update algorithm name
+%   \begin{algorithm}[#1]%
+%  }{\end{algorithm}}
+
+\newcounter{problem}
+\newenvironment{problem}[1][]
+{\refstepcounter{problem} \medskip 
+\noindent
+\begin{tabular}{@{}p{\textwidth}} 
+\\ \toprule 
+ \textbf{Problem~\theproblem:}  #1 
+   \\  \midrule
+   }
+   {\vspace{-0.6cm} \\ \bottomrule \end{tabular}  \medskip}
+\makeatletter
+\newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
+
+%\newtheorem{example}{Example}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{conjecture}{Conjecture}
+
+%\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+
+%\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+% \newtheorem{proof}{Proof}
+
+% QED filled black box
+\newcommand{\qedsymbol}{$\blacksquare$}
+
+%%% Annotation
+\usepackage{color}
+
+%% new commands
+\newcommand{\kibitz}[2]{\ifnum\Comments=0\textcolor{#1}{#2}\fi}
+\newcommand{\newedit}[1]{\kibitz{blue}      {#1}}
+
+\newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
+\DeclareMathOperator*{\minimize}{minimize}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator*{\subjecto}{subject\ to}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+% frequently used sets
+\newcommand{\ones}{\mathbf 1}
+%\newcommand{\real}{{\mbox{\bf R}}}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\complex}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\mc}{\mathcal}
+\newcommand{\ms}{\mathsf}
+\newcommand{\kscomment}[1]{{\color{red} #1}}
+\newcommand{\zlcomment}[1]{{\color{blue} #1}}
+%\newcommand{\kscomment}[1]{#1}
+\newcommand{\kscommentphantom}[1]{{\color{red} #1}}
+\newcommand{\kscommentcancel}[1]{{\color{red} #1}}
+\newcommand{\ksmargin}[1]{\marginpar{\color{red}\footnotesize [KS]:
+#1}}
+\newcommand{\zlmargin}[1]{\marginpar{\color{blue}\footnotesize [ZL]:
+		#1}}
+\newcommand{\zl}[1]{{\color{black} #1}}
+\newcommand{\zlrevision}[1]{{\color{black} #1}}
+
+\newcommand{\diag}{\text{diag}}
+\newcommand{\xunc}{x^{\text{unc}}}
+\newcommand{\xcon}{x^{\text{con}}}
+\newcommand{\xup}{\hat{\bar{x}}}
+\newcommand{\xlb}{\hat{\ubar{x}}}
+\newcommand{\xest}{\hat{\boldsymbol x}}
+\newcommand{\xbar}{\bar{\boldsymbol x}}
+\newcommand{\lamest}{\hat{\boldsymbol \lambda}}
+\newcommand{\thetaest}{\hat{\boldsymbol \theta}}
+\newcommand{\xupm}{\hat{\bar{x}}^{m}}
+\newcommand{\zlb}{\ubar{x}^{m}}
+\newcommand{\zlbm}{\hat{\ubar{x}}^{m}}
+\newcommand{\xcrit}{x^{\text{crit}}}
+\newcommand{\xterm}{\bar{x}^{m}_f}
+\newcommand{\xterr}{\bar{x}^{r}_f}
+\newcommand{\xter}{\bar{x}^f}
+
+\newcommand{\Slift}{\pmb{S}}
+\newcommand{\xlift}{\pmb{x}}
+\newcommand{\Vlift}{\pmb{V}}
+\newcommand{\elift}{\pmb{e}}
+\newcommand{\zetalift}{\pmb{\zeta}}
+\newcommand{\etalift}{\pmb{\eta}}
+\newcommand{\thetalifterr}{\pmb{\theta}^{\text{err}}}
+\newcommand{\xlifterr}{\xlift^{\text{err}}}
+\newcommand{\lambdalift}{\pmb{\lambda}}
+\newcommand{\thetalift}{\pmb{\theta}}
+\newcommand{\Flift}{\pmb{F}}
+\newcommand{\Glift}{\pmb{G}}
+\newcommand{\Hlift}{\pmb{H}}
+\newcommand{\elllift}{\pmb{\ell}}
+\newcommand{\Vflift}{\pmb{V_f}}
+\newcommand{\Ulift}{\pmb{U}}
+\newcommand{\ulift}{\pmb{u}}
+\newcommand{\Jlift}{\pmb{J}}
+\newcommand{\Xflift}{\pmb{\mc X_f}}
+\newcommand{\Xlift}{\pmb{\mc X}}
+\newcommand{\nulift}{\pmb{\nu}}
+\newcommand{\mulift}{\pmb{\mu}}
+
+\newcommand{\thetaup}{\bar{\theta}}
+\newcommand{\thetalb}{\ubar{\theta}}
+\newcommand{\lambdaup}{\bar{\lambda}}
+\newcommand{\lambdalb}{\ubar{\lambda}}
+
+\newcommand{\lambdaunc}{\lambda^{\text{unc}}}
+\newcommand{\xjam}{x^{\text{jam}}}
+\newcommand{\xjamT}{x^{\text{jam}T}}
+\newcommand{\feq}{f^{\text{eq}}}
+\newcommand{\xeq}{x^{\text{eq}}}
+\newcommand{\zopt}{z^{\text{opt}}}
+\newcommand{\zoptm}{z^{\text{opt},m}}
+
+\newcommand{\fin}{f^{\text{in}}}
+\newcommand{\Fin}{F^{\text{in}}}
+\newcommand{\finr}{f^{\text{in,r}}}
+\newcommand{\Finr}{F^{\text{in,r}}}
+\newcommand{\finm}{f^{\text{in,m}}}
+\newcommand{\Finm}{F^{\text{in,m}}}
+\newcommand{\fout}{f^{\text{out}}}
+\newcommand{\foutr}{f^{\text{out,r}}}
+\newcommand{\Fout}{F^{\text{out}}}
+\newcommand{\Foutr}{F^{\text{out,r}}}
+\newcommand{\foutm}{f^{\text{out,m}}}
+\newcommand{\Foutm}{F^{\text{out,m}}}
+
+\newcommand{\auxstate}{z}
+\newcommand{\para}{\theta}
+\newcommand{\auxpara}{\mu}
+\newcommand{\auxv}{\tilde{v}}
+\newcommand{\auxw}{\tilde{w}}
+\newcommand{\auxCm}{\tilde{C}^{\max}}
+
+\newcommand{\IR}{\mathbf{I}-\mathbf{R}}
+\newcommand{\RJ}{\tilde{\mathbf{R}}-\mathbf{J}}
+\newcommand{\Cm}{C^{\max}}
+\newcommand{\CmT}{C^{\max T}}
+\newcommand{\Cd}{C^{\text{drop}}}
+\newcommand{\CdT}{C^{\text{drop}T}}
+
+\newcommand{\K}{\mathbf{K}}
+\newcommand{\A}{\mathbf{A}}
+\newcommand{\B}{\mathbf{B}}
+\newcommand{\C}{\mathbf{C}}
+\newcommand{\PP}{\mathbf{P}}
+\newcommand{\W}{\mathbf{W}}
+\newcommand{\Y}{\mathbf{Y}}
+\newcommand{\G}{\mathbf{G}}
+\newcommand{\U}{\mathbf{U}}
+\newcommand{\Z}{\mathbf{Z}}
+
+\newcommand{\im}{\mathbf{i}}
+\newcommand{\CC}{\mathbb{C}}
+

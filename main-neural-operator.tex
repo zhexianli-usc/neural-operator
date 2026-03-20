@@ -1,0 +1,381 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
+                                                          % if you need a4paper
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4
+                                                          % paper
+
+\IEEEoverridecommandlockouts                              % This command is only
+                                                          % needed if you want to
+                                                          % use the \thanks command
+\overrideIEEEmargins
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+\input{config-neural-operator-zl.tex}
+
+
+% The following packages can be found on http:\\www.ctan.org
+%\usepackage{graphics} % for pdf, bitmapped graphics files
+%\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{times} % assumes new font selection scheme installed
+%\usepackage{amsmath} % assumes amsmath package installed
+%\usepackage{amssymb}  % assumes amsmath package installed
+
+\title{\LARGE \bf
+FNO$^{\im \theta}$: Extended Fourier Neural Operator for learning state and optimal control of distributed parameters systems
+}
+
+%\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
+%         \thanks{*Use the $\backslash$thanks command to put information here}\\
+%         Faculty of Electrical Engineering, Mathematics and Computer Science\\
+%         University of Twente\\
+%         7500 AE Enschede, The Netherlands\\
+%         {\tt\small h.kwakernaak@autsubmit.com}}
+%         \hspace*{ 0.5 in}
+%         \parbox{3 in}{ \centering Pradeep Misra**
+%         \thanks{**The footnote marks may be inserted manually}\\
+%        Department of Electrical Engineering \\
+%         Wright State University\\
+%         Dayton, OH 45435, USA\\
+%         {\tt\small pmisra@cs.wright.edu}}
+%}
+
+\author{% <-this % stops a space
+% \thanks{This work was not supported by any organization}% <-this % stops a space
+% \thanks{H. Kwakernaak is with Faculty of Electrical Engineering, Mathematics and Computer Science,
+%         University of Twente, 7500 AE Enschede, The Netherlands
+%         {\tt\small h.kwakernaak@autsubmit.com}}%
+% \thanks{P. Misra is with the Department of Electrical Engineering, Wright State University,
+%         Dayton, OH 45435, USA
+%         {\tt\small pmisra@cs.wright.edu}}%
+}
+
+
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+
+
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{INTRODUCTION}
+
+
+\section{Problem Formulation}
+
+
+Let $P$ denote a matrix with entries $P_{j,k}, 1\leq j\leq p, 1\leq l\leq q$.
+Each entry $P_{j,l}$ is a polynomial function in $\CC^n$. 
+Let $D_j = -\im \partial/\partial_{\xi_j}, j= 1, \ldots, n$, and $D = (D_1, \ldots, D_n)$. 
+Then, $P(D)$ is a matrix of linear partial differential operators with constant coefficients.
+Following this notation, we consider the system of inhomogeneous PDEs in a convex open subset $\Omega$ of $\RR^n$ of the form,
+\begin{equation}\label{eq:system}
+P(D) \phi = u,  
+\end{equation}
+or, more explicitly,
+\begin{equation}\label{eq:system-explicit}
+\sum_{l=1}^q P_{j,l}(-\im \partial/\partial_{\xi_1}, \ldots, -\im \partial/\partial_{\xi_n}) \phi_l = u_j, \quad j=1, \ldots, p,
+\end{equation} 
+where $\phi$ is the state and $u$ is the control input.
+In this paper, we focus on smooth functions $u_j$ and $\phi_l$ in $\mc L^2(\Omega)\cap \mc C^\infty(\Omega), j=1,\ldots,p$ and $l=1,\ldots,q$.
+Note that the system \eqref{eq:system} has solutions in more general spaces, such as the space of distributions \cite{treves2012ehrenpreis}.
+\begin{remark}
+   In practice, the domain $\Omega$ can either denote a spatial domain or a product of a spatial domain and a time interval, i.e., $\Omega = \Omega_x \times \Omega_t$ where $\Omega_x \subseteq \RR^{n-1}$ and $\Omega_t \subseteq \RR_+$.
+   For brevity, we use a single variable $\xi$ to denote a point in $\Omega$ and do not distinguish between spatial and temporal components.
+\end{remark}
+\begin{remark}
+   Appropriate boundary conditions are typically specified to ensure the uniqueness of the solution to the system \eqref{eq:system}.
+   We focus on general solutions to \eqref{eq:system} first and postpone the discussion of boundary conditions to numerical experiments.
+\end{remark}
+\begin{example}
+   Throughout the paper, we will use the following one-dimensional heat equation as a running example to illustrate the main results.
+   \begin{equation}\label{eq:heat-equation}
+      \frac{\partial \phi(x,t)}{\partial t} = \frac{\partial^2 \phi(x,t)}{\partial x^2} + u(x,t).
+   \end{equation}
+   In this example, $P$ is a single polynomial and $P(\xi) = \im \xi_1 + \xi_2^2.$
+\end{example}
+
+The optimal control problem under consideration is to find a control input $u$ that minimizes a cost functional $J(\phi, u)$ of the following form subject to the system \eqref{eq:system},
+\begin{equation}\label{eq:objective-functional}
+      J(\phi,u) = \int_{\Omega} |\phi(\xi) - \phi_d(\xi)|^2 + \lambda |u(\xi)|^2 d\xi,
+\end{equation}
+where $\phi_d$ is a given desired state and $\lambda > 0$ is a regularization parameter.
+When $\phi_d=0$, this problem is a special case of the classical linear quadratic regulator (LQR) problem for PDEs \cite{curtain2012introduction}.
+For $\Omega=\Omega_x \times \Omega_t$, where $\Omega_x = \RR^{n-1}$ and $\Omega_t = \RR_+$, explicit expressions for optimal control in the unbounded spatial domain have been derived in \cite{bamieh2002distributed}. 
+The one-dimensional case where $\Omega_x$ is a finite interval has also been studied in \cite{li2024complex}.
+However, explicit expressions for optimal control in a general (potentially bounded) domain $\Omega$ are not readily available.
+This is relevant for many practical applications where the spatial domain is typically bounded.
+
+In this paper, we propose to develop a neural operator for learning explicit expressions for optimal control. 
+The key to our approach is to leverage an integral representation of optimal control in designing neural operator architecture.
+The integral representation is derived in the following section.
+
+\section{Integral representations for optimal control}
+\label{sec:integral-representation}
+To derive an integral representation for optimal control, we first present the first-order optimality conditions that are satisfied by any optimal control to \eqref{eq:objective-functional} subject to \eqref{eq:system}.
+Then, we leverage the first-order optimality conditions and the Ehrenpreis fundamental principle \cite{ehrenpreis1970fourier,treves2012ehrenpreis} to
+show that any optimal control can be represented as an integral in $\CC^n$.
+
+For the LQR problem under consideration, the first-order optimality conditions can be expressed as a system of coupled PDEs using the adjoint approach.
+The following result follows by specializing \cite[Section 1.6.3]{hinze2008optimization} to the LQR problem.
+\begin{lemma}
+   Let $u^*$ be an optimal control for \eqref{eq:objective-functional} subject to \eqref{eq:system} and $\phi^*$ be the corresponding optimal state.
+   Then, there exists an adjoint state $\psi^*$ such that the following system of equations is satisfied,
+   \begin{equation}\label{eq:optimality-conditions}
+   \begin{cases}
+      P(D) \phi^* = u^*, \\
+      P(D)^\dagger \psi^* = -(\phi^* - \phi_d), \\
+      u^* = \frac{1}{\lambda} \psi^*,
+   \end{cases}
+   \end{equation}
+   where $P(D)^\dagger$ denotes the adjoint of $P(D)$.
+\end{lemma}
+
+Substituting the last equation for $u^*$ into the first equation in \eqref{eq:optimality-conditions}, we observe that optimal control $u^*$ and state $\phi^*$ can be represented as a solution to the following system of PDEs,
+\begin{equation}\label{eq:optimal-control-pde}
+   \begin{bmatrix}
+      P(D) & -I \\
+      P(D)^\dagger & \lambda I
+   \end{bmatrix}
+   \begin{bmatrix}
+      \phi^* \\
+      u^*
+   \end{bmatrix}
+   = \begin{bmatrix}
+      0 \\
+      \phi_d
+   \end{bmatrix}.
+\end{equation}
+Note that \eqref{eq:optimal-control-pde} is a system of linear PDEs with constant coefficients and can be written in a similar form as \eqref{eq:system}. 
+
+In the following, we first present the existence of a solution to \eqref{eq:system} in a convolution form.
+Then, we combine this convolution solution with the Ehrenpreis-Palamodov fundamental principle \cite{ehrenpreis1970fourier,palamodov1970linear} to derive an integral representation for optimal control.
+
+\begin{lemma}[Theorem 2.11 in \cite{stein2011functional}]\label{lemma:fundamental-solution}
+   There exists a distribution $\tilde{E}$ such that $P(D) \tilde{E} = \delta$, where $\delta$ is the Dirac delta function. Moreover, the convolution of $\tilde{E}$ with the control input $u$, i.e., $\tilde{\phi} = \tilde{E} \ast u$, is a solution to \eqref{eq:system}.
+\end{lemma}
+
+\begin{remark}
+   The classical FNO is inspired by the existence of a solution $\tilde{\phi}$ in a convolution form. 
+The key ingredient in FNO is to learn the convolution operator in the Fourier space, which reduces to learning a multiplication parameter. 
+\end{remark}
+
+The existence of $\tilde{\phi}$ does not necessarily imply that every solution to \eqref{eq:system} can be represented in a convolution form. 
+On the other hand, the Ehrenpreis-Palamodov fundamental principle states that any solution to \eqref{eq:system} with $u=0$ can be represented as an integral of exponential functions multiplied by polynomials over the complex domain.
+
+\begin{lemma}[\cite{ehrenpreis1970fourier,palamodov1970linear,harkonen2023gaussian}]\label{lemma:fundamental-principle}
+   Let $\bar{\phi}$ denote a solution to the system \eqref{eq:system} with $u=0$. Then, there exists zero sets of polynomials $\bar{\mc V}_j\subset \CC^n, j=1,\ldots,s$, polynomials $\bar{Q}_{j,l}, j=1,\ldots,s, l=1,\ldots,m_j$, and measures $d\bar{\mu}_{j,l}$ whose support lies in $\bar{\mc V}_j$, such that $\bar{\phi}$ can be represented as an integral of the following form,
+\begin{equation}\label{eq:ehrenpreis-representation}
+   \bar{\phi} = \sum_{j=1}^{s}\sum_{l=1}^{m_j}\int_{\bar{\mc V}_j} e^{\im k \cdot \xi} \bar{Q}_{j,l}(\xi,k) d\bar{\mu}_{j,l}(k).
+\end{equation}
+Moreover, the function $e^{\im k \cdot \xi} \bar{Q}_{j,l}(\xi,k)$ satisfies the system of PDEs in \eqref{eq:system} for each $k\in \bar{\mc V}_j$.
+\end{lemma}
+
+Applying Lemmas~\ref{lemma:fundamental-solution}--\ref{lemma:fundamental-principle} to the coupled state-control system \eqref{eq:optimal-control-pde}, we obtain the following result.
+
+\begin{theorem}\label{thm:integral-representation}
+Let $u^*$ denote an optimal control to \eqref{eq:objective-functional} subject to \eqref{eq:system} and $\phi^*$ denote the corresponding optimal state. Then, there exists a distribution $E$, zero sets of polynomials $\mc V_j\subset \CC^n, j=1,\ldots,s$, functions $Q_{j,l}, j=1,\ldots,s, l=1,\ldots,m_j$, and measures $d\mu_{j,l}$ whose support lies in $\mc V_j$, such that $u^*$ and $\phi^*$ can be represented in the following form,
+\begin{equation}\label{eq:integral-representation}
+   \begin{bmatrix}
+      \phi^* \\
+      u^*
+   \end{bmatrix} = E \ast \begin{bmatrix}
+      0 \\
+      \phi_d
+   \end{bmatrix} + \sum_{j=1}^{s}\sum_{l=1}^{m_j}\int_{\mc V_j} e^{\im k \cdot \xi} Q_{j,l}(\xi,k) d\mu_{j,l}(k).
+\end{equation}
+Moreover, the function $e^{\im k \cdot \xi} Q_{j,l}(\xi,k)$ satisfies the system of PDEs in \eqref{eq:optimal-control-pde} for each $k\in \mc V_j$.
+\end{theorem}
+\begin{proof}
+According to Lemma~\ref{lemma:fundamental-solution}, there exists a distribution $E$ such that
+\begin{equation}\label{eq:optimal-control-pde-fundamental}
+   \begin{bmatrix}
+      P(D) & -I \\
+      P(D)^\dagger & \lambda I
+   \end{bmatrix}
+   E \ast
+   \begin{bmatrix}
+      0 \\
+      \phi_d
+   \end{bmatrix}
+   = \begin{bmatrix}
+      0 \\
+      \phi_d
+   \end{bmatrix}.
+\end{equation}
+Combining \eqref{eq:optimal-control-pde} and \eqref{eq:optimal-control-pde-fundamental}, we have
+\begin{equation}\label{eq:optimal-control-pde-rewrite}
+   \begin{bmatrix}
+      P(D) & -I \\
+      P(D)^\dagger & \lambda I
+   \end{bmatrix}
+   \left(
+   \begin{bmatrix}
+      \phi^* \\
+      u^* 
+   \end{bmatrix}
+   - E \ast
+   \begin{bmatrix}
+      0 \\
+      \phi_d   
+   \end{bmatrix}
+   \right)
+   = 0.
+\end{equation}
+Applying Lemma~\ref{lemma:fundamental-principle} to \eqref{eq:optimal-control-pde-rewrite}, we obtain the integral representation in \eqref{eq:integral-representation}.
+
+\end{proof}
+
+\begin{example}
+   The integral representation in \eqref{eq:integral-representation} is quite abstract and non-constructive.
+   We illustrate an example of this representation for the one-dimensional heat equation \eqref{eq:heat-equation} given the initial condition $\phi(x,0) = \phi_0(x)$.
+   Let $\phi_d=0, \lambda=1$. 
+   Following \cite[Section V-B]{bamieh2002distributed}, the optimal state and control for the heat equation can be represented as follows,
+\begin{equation}\label{eq:heat-integral-representation}
+   \begin{split}
+         \phi^*(x,t) &= \int_{\RR} e^{\im k_x x - \omega(k_x)t} \hat{\phi}_0(k_x) \frac{dk_x}{2\pi},\\
+    u^*(x,t) &= \int_{\RR} e^{\im k_x x - \omega(k_x)t} (k_x^2-\omega(k_x))\hat{\phi}_0(k_x) \frac{dk_x}{2\pi},
+   \end{split}
+\end{equation}
+where $\omega(k_x)=\sqrt{k_x^4+1}$ and $\hat{\phi}_0(k_x)$ is the Fourier transform of the initial condition $\phi_0(x)$.
+Let $k= \begin{bmatrix}
+k_x & k_t
+\end{bmatrix}$. Then, the expression \eqref{eq:heat-integral-representation} can be represented in the form of \eqref{eq:integral-representation} by letting $s=1,m_1=1,\mc V_1 = \{k\in\CC^2: -k_t^2 + k_x^4 +1=0\}$, $Q_{1,1}(x,t,k) = \begin{bmatrix}
+1 & k_x^2 + k_t
+\end{bmatrix}^\top$, $d\mu_{1,1}(k) = \frac{1}{2\pi}\hat{\phi}_0(k_x)dk$ if $k_t \in \RR_+, k_x \in \RR$ and $d\mu_{1,1}(k) = 0$ otherwise, where $dk$ is the Lebesgue measure in $\RR^2$.
+
+For the heat equation over $\RR$, it is sufficient to represent optimal control as an integral over $\RR$ as in \eqref{eq:heat-integral-representation}. 
+Note that the integrals in \eqref{eq:heat-integral-representation} can also be deformed to integrals over contours in $\CC$.
+For the heat equation over a finite interval, real domain is not enough and optimal control needs to be represented as an integral over well-constructed contours in $\CC$ in the form \eqref{eq:integral-representation}, see \cite{li2024complex}.
+% Note that $\begin{bmatrix}
+%    \phi & u
+% \end{bmatrix}^\top = e^{\im k \cdot \xi} Q_{1,1}(\xi,k)$ satisfies \eqref{eq:optimal-control-pde} for each $k\in \mc V_1$.
+\end{example}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Extended Fourier Neural Operator}
+In this section, we first present the architecture of the classical Fourier Neural Operator (FNO). Then, we propose an extended FNO architecture, called FNO$^{\im \theta}$, that is inspired by the complex integral representation in \eqref{eq:integral-representation}.
+When the phase $\theta$ is zero, FNO$^{\im \theta}$ reduces to the classical FNO.
+
+\subsection{Classical FNO}
+
+Let $a,b$ denote an input and output function in Banach spaces $\mc A(\Omega; \RR^{n_a}), \mc B(\Omega; \RR^{n_b})$, respectively. 
+In this paper, we restrict our attention to the case where $\mc A$ and $\mc B$ are subspaces of $\mc L^2(\Omega)\cap\mc C^\infty(\Omega)$, respectively.
+Following \cite{li2020fourier,kovachki2021universal}, we consider a neural operator $\mc N(a): \mc A \to \mc B$ of the form
+\begin{equation}\label{eq:neural-operator}
+   \mc N(a)= \mc Q \circ \mc L_L \circ \mc L_{L-1} \circ \cdots \circ \mc L_1 \circ \mc R(a),
+\end{equation}
+where $L$ is a given length in $\NN$, $\mc R: \mc A(\Omega; \RR^{n_a}) \to \mc B(\Omega; \RR^{n_v})$ is a lifting operator with $n_v \geq n_b$,
+$\mc Q: \mc B(\Omega; \RR^{n_v}) \to \mc B(\Omega; \RR^{n_b})$ is a projection operator,
+and $\mc L_l: \mc B(\Omega; \RR^{n_v}) \to \mc B(\Omega; \RR^{n_v}), l=1,\ldots,L$ are nonlinear operator layers. 
+The lifting and projection operators are typically linear transformations implemented using multilayer perceptrons \cite{duruisseaux2025fourier}, and the nonlinear operator layer is of the form,
+\begin{equation}\label{eq:FNO-layer}
+   \mc L_l(v_l)(\xi) = \sigma\left(W_l v_l(\xi) + \left(\mc K_l v_l\right)(\xi)\right),
+\end{equation}
+where $v_l\in \mc B(\Omega; \RR^{n_v})$ is the output from the previous layer, $\sigma$ is a nonlinear activation function applied component-wise, $W_l \in \RR^{n_v \times n_v}$ is a weight matrix, and $\mc K_l:\mc B(\Omega; \RR^{n_v}) \to \mc B(\Omega; \RR^{n_v})$ is a bounded linear operator.
+
+Different types of neural operators vary by the choice of the linear operator $\mc K_l$. 
+To learn solution operators of PDEs, the linear operator $\mc K_l$ in FNO is defined as a convolution operator in the Fourier space motivated by the existence of a solution in a convolution form by Lemma~\ref{lemma:fundamental-solution}.
+Since the convolution operation is transformed to a multiplication in the Fourier space, the operator $\mc K_l$ in FNO is expressed as follows, \begin{equation}\label{eq:convolution-Kl}
+(\mc K_lv_l)(\xi) = \int_{\RR^n} e^{\im k \cdot \xi} \hat{K}_l(k) \hat{v}_l(k) \frac{dk}{2\pi},
+\end{equation}
+where $\hat{K}_l(k)\in \CC^{n_v \times n_v}$ is a matrix indexed by frequency variable $k$, $\hat{v}_l(k)$ is the Fourier transform of $v_l$.
+% \begin{equation}
+%       \hat{v}_l(k) = \int_{\Omega} e^{-\im k \cdot \xi} v_l(\xi) d\xi,
+% \end{equation}
+\begin{remark}
+   In practice, the value of input function $a$ is typically only available at a finite number of discretized spatial locations in $\Omega$.
+   Also, the matrix $\hat{K}_l(k)$ is usually learned for a finite number of frequencies $k$ in the Fourier space.
+Therefore, FNO is implemented in a discretized manner, where \eqref{eq:convolution-Kl} is approximated as a finite sum. 
+We refer readers to \cite{li2020fourier,kovachki2021universal,duruisseaux2025fourier} for more details on the discretized version of FNO and other practical implementation issues.
+\end{remark}
+
+In summary, the parameters to be learned in FNO include the weight matrices $W_l$ and the Fourier space parameters $\hat{K}_l(k)$ for all layers $l=1,\ldots,L$. 
+Despite the motivation from linear PDEs, FNO has been successfully applied to learning solution operators of all different types of nonlinear PDEs, with applications in various fields \cite{li2020fourier,kovachki2021universal,duruisseaux2025fourier}.
+This is partially due to the expressiveness of a neural operator architecture in \eqref{eq:neural-operator}, especially when the number of layers $L$ (length) and the lifted dimension $n_v$ (width) are sufficiently large.
+In the following, we introduce an extended FNO architecture, called FNO$^{\im \theta}$, which will be shown to be more expressive than the classical FNO when $n_v$ is small in numerical experiments.
+
+\subsection{Extended FNO$^{\im \theta}$}
+
+The key to the design of FNO is the convolution operator $\mc K_l$ in \eqref{eq:convolution-Kl} represented in the Fourier space, inspired by the existence of a solution in a convolution form, see Lemma~\ref{lemma:fundamental-solution}.
+However, not every solution to \eqref{eq:system} can be represented in a convolution form, which could potentially limit the expressiveness of FNO.
+In Lemma~\ref{lemma:fundamental-principle} and Theorem~\ref{thm:integral-representation}, we show that any state and optimal control of \eqref{eq:system} can be represented in a form involving a complex integral, see \eqref{eq:ehrenpreis-representation}--\eqref{eq:integral-representation}.
+Comparing \eqref{eq:integral-representation} to \eqref{eq:convolution-Kl}, the integrands all contain the leading exponential term $e^{\im k \cdot \xi}$.
+This motivates us to design an extended FNO architecture, where the linear operator $\mc K_l$ in \eqref{eq:FNO-layer} is given by
+\begin{equation}\label{eq:convolution-Kl-extended}
+(\mc K_l^{\theta}v_l)(\xi) = \int_{\RR^n} e^{\im z(k,\theta_l)\cdot \xi} \hat{K}_l(k) \hat{v}_l(k) \frac{dk}{2\pi},
+\end{equation}
+where $\theta_l = (\theta_{l,1}, \ldots, \theta_{l,n}), z_j(k,\theta_l) = k_je^{\im \theta_{l,j}},  j=1,\ldots,n$. In other words, the original frequency variable $k$ is the modulus of the new frequency variable $z$, and we introduce a new parameter $\theta_l$ to be learned as the phase of the complex variable $z$.
+Clearly, when the phase $\theta_l$ is zero, $\mc K_l^{\theta}$ in \eqref{eq:convolution-Kl-extended} reduces to $\mc K_l$ in \eqref{eq:convolution-Kl}.
+
+In the following section, we present numerical experiments to show that introducing the new parameter $\theta$ greatly improves the expressiveness of the neural operator, especially for a small value of the lifted dimension $n_v$ for which the classical FNO may fail.
+
+\section{Numerical Experiments}
+
+\begin{figure}[b]
+   \centering
+   \includegraphics[width=\columnwidth]{fig/mse_orig_hist_comparison_log.png}
+   \caption{Comparison of the original MSE history between FNO Heat BC and FNO Heat BC Real Freq.}
+\end{figure}
+
+\begin{figure*}
+   \centering
+   \includegraphics[width=\textwidth]{fig/bc_example_0_comparison.png}
+   \caption{Numerical results for the one-dimensional heat equation.}
+\end{figure*}
+\begin{figure*}
+   \centering
+   \includegraphics[width=\textwidth]{fig/bc_example_24_comparison.png}
+   \caption{Numerical results for the one-dimensional heat equation.}
+\end{figure*}
+\begin{figure*}
+   \centering
+   \includegraphics[width=\textwidth]{fig/bc_example_49_comparison.png}
+   \caption{Numerical results for the one-dimensional heat equation.}
+\end{figure*}
+\addtolength{\textheight}{-3cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{CONCLUSIONS AND FUTURE WORKS}
+
+\subsection{Conclusions}
+
+
+\subsection{Future Works}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ACKNOWLEDGMENTS}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\bibliography{reference}
+\bibliographystyle{IEEEtran}
+
+
+\end{document}
