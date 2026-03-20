@@ -1,6 +1,0 @@
-PWD /Users/zhexianli/Desktop/Research/Manuscript/Ehrenpreis Neural Operator /CDC 2026
-INPUT /usr/local/texlive/2023/texmf.cnf
-INPUT /usr/local/texlive/2023/texmf-dist/web2c/texmf.cnf
-INPUT /usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/zhexianli/Desktop/Research/Manuscript/Ehrenpreis Neural Operator /CDC 2026/main-finite-interval-journal.tex
-OUTPUT files/main-finite-interval-journal.log
