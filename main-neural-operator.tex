@@ -326,10 +326,72 @@ In the following section, we present numerical experiments to show that introduc
 
 \section{Numerical Experiments}
 
-\begin{figure}[b]
+\begin{figure*}[t]
    \centering
-   \includegraphics[width=\columnwidth]{fig/mse_orig_hist_comparison_log.png}
-   \caption{Comparison of the original MSE history between FNO Heat BC and FNO Heat BC Real Freq.}
+   \begin{subfigure}[t]{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{fig/Rel_burgers_state_comparison.png}
+      \caption{Learning state}
+   \end{subfigure}
+   \hfill
+   \begin{subfigure}[t]{0.48\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{fig/Rel_burgers_control_comparison.png}
+      \caption{Learning optimal control}
+   \end{subfigure}
+   \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation.}
+   \label{fig:burgers_comparison}
+\end{figure*}
+
+In this section, we present numerical results to compare the performance of FNO and FNO$^{\angle \theta}$ in learning state and optimal control for the Burgers' equation of the form
+\begin{equation}\label{eq:burgers-equation}
+   \frac{\partial \phi(x,t)}{\partial t} + \phi(x,t) \frac{\partial \phi(x,t)}{\partial x} = \nu \frac{\partial^2 \phi(x,t)}{\partial x^2} + u(x,t),
+\end{equation}
+where $\nu > 0$ is the viscosity coefficient.
+The Burgers' equation is a nonlinear PDE that has been widely used as a benchmark problem for testing the performance of neural operators \cite{li2020fourier,takamoto2022pdebench}.
+Note that \eqref{eq:burgers-equation} cannot be written in the form of \eqref{eq:system} due to the nonlinearity. 
+Therefore, the integral representation in Theorem~\ref{thm:integral-representation} does not directly apply to \eqref{eq:burgers-equation}.
+However, the expressiviness of the neural operator architecture in \eqref{eq:neural-operator} allows us to learn approximated representations for solution and optimal control operators of \eqref{eq:burgers-equation} using FNO or FNO$^{\angle \theta}$. 
+
+\subsection{Learning state operator}
+\begin{figure}
+   \centering
+   \begin{subfigure}[t]{0.23\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{fig/burgers_state_example_24_real_frequency.png}
+      \caption{FNO}
+   \end{subfigure}
+   \hfill
+   \begin{subfigure}[t]{0.23\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{fig/burgers_state_example_24_complex_frequency.png}
+      \caption{FNO$^{\angle \theta}$}
+   \end{subfigure}
+   \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation.}
+   \label{fig:burgers_comparison}
+   
+\end{figure}
+
+
+
+\subsection{Learning optimal control operator}
+
+\begin{figure}
+   \centering
+   \begin{subfigure}[t]{0.23\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{fig/burgers_control_example_24_real_frequency.png}
+      \caption{FNO}
+   \end{subfigure}
+   \hfill
+   \begin{subfigure}[t]{0.23\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{fig/burgers_control_example_24_complex_frequency.png}
+      \caption{FNO$^{\angle \theta}$}
+   \end{subfigure}
+   \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation.}
+   \label{fig:burgers_comparison}
+   
 \end{figure}
 
 % \begin{figure*}
