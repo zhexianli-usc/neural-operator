@@ -25,7 +25,7 @@
 %\usepackage{amssymb}  % assumes amsmath package installed
 
 \title{\LARGE \bf
-FNO$^{\im \theta}$: Extended Fourier Neural Operator for learning state and optimal control of distributed parameters systems
+FNO$^{\im \theta}$: Extended Fourier Neural Operator for learning state and optimal control of distributed parameter systems
 }
 
 %\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
@@ -149,7 +149,7 @@ Substituting the last equation for $u^*$ into the first equation in \eqref{eq:op
 \begin{equation}\label{eq:optimal-control-pde}
    \begin{bmatrix}
       P(D) & -I \\
-      P(D)^\dagger & \lambda I
+      I & \lambda P(D)^\dagger
    \end{bmatrix}
    \begin{bmatrix}
       \phi^* \\
