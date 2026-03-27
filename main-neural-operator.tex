@@ -25,7 +25,7 @@
 %\usepackage{amssymb}  % assumes amsmath package installed
 
 \title{\LARGE \bf
-FNO$^{\im \theta}$: Extended Fourier Neural Operator for learning state and optimal control of distributed parameter systems
+FNO$^{\angle \theta}$: Extended Fourier Neural Operator for learning state and optimal control of distributed parameter systems
 }
 
 %\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
@@ -205,7 +205,7 @@ According to Lemma~\ref{lemma:fundamental-solution}, there exists a distribution
 \begin{equation}\label{eq:optimal-control-pde-fundamental}
    \begin{bmatrix}
       P(D) & -I \\
-      P(D)^\dagger & \lambda I
+       \lambda I &P(D)^\dagger 
    \end{bmatrix}
    E \ast
    \begin{bmatrix}
@@ -221,7 +221,7 @@ Combining \eqref{eq:optimal-control-pde} and \eqref{eq:optimal-control-pde-funda
 \begin{equation}\label{eq:optimal-control-pde-rewrite}
    \begin{bmatrix}
       P(D) & -I \\
-      P(D)^\dagger & \lambda I
+       \lambda I &P(D)^\dagger 
    \end{bmatrix}
    \left(
    \begin{bmatrix}
@@ -343,12 +343,22 @@ In the following section, we present numerical experiments to show that introduc
    \label{fig:burgers_comparison}
 \end{figure*}
 
-In this section, we present numerical results to compare the performance of FNO and FNO$^{\angle \theta}$ in learning state and optimal control for the Burgers' equation of the form
+In this section, we present numerical results to compare the performance of FNO and FNO$^{\angle \theta}$ in learning state and optimal control for the Burgers' equation.
+Consider the domain $\Omega = [0,1]\times[0,1]$ and the following Burgers' equation,
 \begin{equation}\label{eq:burgers-equation}
    \frac{\partial \phi(x,t)}{\partial t} + \phi(x,t) \frac{\partial \phi(x,t)}{\partial x} = \nu \frac{\partial^2 \phi(x,t)}{\partial x^2} + u(x,t),
 \end{equation}
-where $\nu > 0$ is the viscosity coefficient.
-The Burgers' equation is a nonlinear PDE that has been widely used as a benchmark problem for testing the performance of neural operators \cite{li2020fourier,takamoto2022pdebench}.
+where $\nu$ is the viscosity coefficient.
+We impose the following initial and boundary conditions for \eqref{eq:burgers-equation} to ensure the uniqueness of the solution,
+\begin{equation}\label{eq:burgers-initial-bondition}
+   \phi(x,0) = \phi_0(x), \quad x\in [0,1].
+\end{equation}
+\begin{equation}\label{eq:burgers-boundary-condition}
+   \phi(0,t) = g(t), \phi(1,t) = h(t), \quad t\in [0,1],
+\end{equation}
+where $\phi_0, g, h$ are given smooth functions.
+
+The Burgers' equation \eqref{eq:burgers-equation} is a nonlinear PDE that has been widely used as a benchmark problem for testing the performance of neural operators \cite{li2020fourier,takamoto2022pdebench}.
 Note that \eqref{eq:burgers-equation} cannot be written in the form of \eqref{eq:system} due to the nonlinearity. 
 Therefore, the integral representation in Theorem~\ref{thm:integral-representation} does not directly apply to \eqref{eq:burgers-equation}.
 However, the expressiviness of the neural operator architecture in \eqref{eq:neural-operator} allows us to learn approximated representations for solution and optimal control operators of \eqref{eq:burgers-equation} using FNO or FNO$^{\angle \theta}$. 
@@ -368,10 +378,13 @@ However, the expressiviness of the neural operator architecture in \eqref{eq:neu
       \caption{FNO$^{\angle \theta}$}
    \end{subfigure}
    \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation.}
-   \label{fig:burgers_comparison}
-   
+   \label{fig:burgers_state_comparison}
 \end{figure}
 
+First, we train the neural operators to learn the state operator of the Burgers' equation, which maps the boundary conditions $g(t),h(t)$ to the state $\phi(x,t)$ in the domain $\Omega$. 
+We follow a supervised learning approach as in \cite{li2020fourier}, where we minimize the mean squared error (MSE) between the predicted state and the true state over a training dataset.
+To generate the training dataset, we fix the initial condition as $\phi_0(x) = \sin(\pi x)$ and randomly sample the boundary conditions $g(t), h(t)$ from a Gaussian random field \cite{Rasmussen2004} with the length scale $\ell=0.15$ and standard deviation $\sigma=1$. 
+Then, we solve the Burgers' equation \eqref{eq:burgers-equation} with the sampled boundary conditions using the finite difference method following \cite{li2020fourier} to obtain the corresponding state $\phi(x,t)$, which serves as the ground truth for training.
 
 
 \subsection{Learning optimal control operator}
@@ -390,7 +403,7 @@ However, the expressiviness of the neural operator architecture in \eqref{eq:neu
       \caption{FNO$^{\angle \theta}$}
    \end{subfigure}
    \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation.}
-   \label{fig:burgers_comparison}
+   \label{fig:burgers_control_comparison}
    
 \end{figure}
 
