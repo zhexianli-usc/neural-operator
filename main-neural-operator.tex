@@ -319,8 +319,8 @@ This motivates us to design an extended FNO architecture, where the linear opera
 \begin{equation}\label{eq:convolution-Kl-extended}
 (\mc K_l^{\theta}v_l)(\xi) = \int_{\RR^n} e^{\im z(k,\theta_l)\cdot \xi} \hat{K}_l(k) \hat{v}_l(k) \frac{dk}{2\pi},
 \end{equation}
-where $\theta_l = (\theta_{l,1}, \ldots, \theta_{l,n}), z_j(k,\theta_l) = k_je^{\im \theta_{l,j}},  j=1,\ldots,n$. In other words, the original frequency variable $k$ is the modulus of the new frequency variable $z$, and we introduce a new parameter $\theta_l$ to be learned as the phase of the complex variable $z$.
-Clearly, when the phase $\theta_l$ is zero, $\mc K_l^{\theta}$ in \eqref{eq:convolution-Kl-extended} reduces to $\mc K_l$ in \eqref{eq:convolution-Kl}.
+where $\theta_l(k) = (\theta_{l,1}(k), \ldots, \theta_{l,n}(k)), z_j(k,\theta_l) = k_je^{\im \theta_{l,j}(k)},  j=1,\ldots,n$. In other words, the original frequency variable $k$ is the modulus of the new frequency variable $z$, and we introduce a new parameter $\theta_l(k)$ to be learned as the phase of the complex variable $z$.
+When the phase $\theta_l(k)$ is zero, $\mc K_l^{\theta}$ in \eqref{eq:convolution-Kl-extended} reduces to $\mc K_l$ in \eqref{eq:convolution-Kl}.
 
 In the following section, we present numerical experiments to show that introducing the new parameter $\theta$ greatly improves the expressiveness of the neural operator, especially for a small value of the lifted dimension $n_v$ for which the classical FNO may fail.
 
@@ -332,15 +332,17 @@ In the following section, we present numerical experiments to show that introduc
       \centering
       \includegraphics[width=\textwidth]{fig/Rel_burgers_state_comparison.png}
       \caption{Learning state}
+      \label{fig:burgers_training_error_state}
    \end{subfigure}
    \hfill
    \begin{subfigure}[t]{0.48\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/Rel_burgers_control_comparison.png}
       \caption{Learning optimal control}
+      \label{fig:burgers_training_error_control}
    \end{subfigure}
-   \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation.}
-   \label{fig:burgers_comparison}
+   \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation \eqref{eq:burgers-equation}.}
+   \label{fig:burgers_training_comparison}
 \end{figure*}
 
 In this section, we present numerical results to compare the performance of FNO and FNO$^{\angle \theta}$ in learning state and optimal control for the Burgers' equation.
@@ -381,10 +383,21 @@ However, the expressiviness of the neural operator architecture in \eqref{eq:neu
    \label{fig:burgers_state_comparison}
 \end{figure}
 
-First, we train the neural operators to learn the state operator of the Burgers' equation, which maps the boundary conditions $g(t),h(t)$ to the state $\phi(x,t)$ in the domain $\Omega$. 
+First, we train neural operators of the form \eqref{eq:neural-operator} to learn the state operator of the Burgers' equation, which takes the boundary conditions $g,h$ as input $a$ and gives the state $\phi$ as output $b$. 
 We follow a supervised learning approach as in \cite{li2020fourier}, where we minimize the mean squared error (MSE) between the predicted state and the true state over a training dataset.
 To generate the training dataset, we fix the initial condition as $\phi_0(x) = \sin(\pi x)$ and randomly sample the boundary conditions $g(t), h(t)$ from a Gaussian random field \cite{Rasmussen2004} with the length scale $\ell=0.15$ and standard deviation $\sigma=1$. 
-Then, we solve the Burgers' equation \eqref{eq:burgers-equation} with the sampled boundary conditions using the finite difference method following \cite{li2020fourier} to obtain the corresponding state $\phi(x,t)$, which serves as the ground truth for training.
+Then, we solve the Burgers' equation \eqref{eq:burgers-equation} with the sampled boundary conditions using the finite difference method following \cite{li2020fourier} to obtain the corresponding state $\phi(x,t)$ in $\Omega$, which serves as the ground truth for training.
+
+For both FNO and FNO$^{\angle \theta}$, we use the Gaussian Error Linear Unit (GELU) activation function for $\sigma$ and batch normalization following \cite{duruisseaux2025fourier}. The number of Fourier layers is set to $L=4$, according to the recommendation in \cite[Section 4.3]{duruisseaux2025fourier}.
+The lifted dimension is set to $n_v=n_a$. 
+The lifted dimension $n_v$ determines the expressive capacity of the neural operator. Increasing the lifted dimension allows the neural operator to represent more complex relations in the data, but comes at the cost of increased computational complexity and memory usage \cite{duruisseaux2025fourier}.
+In our experiments, we set $n_v$ to be the same as the input dimension $n_a$ to stress test the performance of FNO and FNO$^{\angle \theta}$.
+
+To implement the operators \eqref{eq:convolution-Kl} and \eqref{eq:convolution-Kl-extended}, we discretize the Fourier space and learn the parameters $\hat{K}_l(k)$ and $\theta_l(k)$ for a finite number of frequencies $k_m, m= -M, \ldots, M$.
+Then, the integrals in \eqref{eq:convolution-Kl} and \eqref{eq:convolution-Kl-extended} are approximated as sums over the discretized frequencies, similar to the discrete Fourier series.
+In practice, a large value of $M$ typically introduces more errors during the training \cite[Section 4.2]{duruisseaux2025fourier}, and we set $M=4$ in our experiments.
+
+Figure~\ref{fig:burgers_training_error_state} compares the relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$.
 
 
 \subsection{Learning optimal control operator}
