@@ -43,14 +43,14 @@ FNO$^{\angle \theta}$: Extended Fourier Neural Operator for learning state and o
 %         {\tt\small pmisra@cs.wright.edu}}
 %}
 
-\author{% <-this % stops a space
+\author{Zhexian Li, Ketan Savla% <-this % stops a space
 % \thanks{This work was not supported by any organization}% <-this % stops a space
-% \thanks{H. Kwakernaak is with Faculty of Electrical Engineering, Mathematics and Computer Science,
-%         University of Twente, 7500 AE Enschede, The Netherlands
-%         {\tt\small h.kwakernaak@autsubmit.com}}%
-% \thanks{P. Misra is with the Department of Electrical Engineering, Wright State University,
-%         Dayton, OH 45435, USA
-%         {\tt\small pmisra@cs.wright.edu}}%
+\thanks{Z. Li is with the Sonny Astani Department of Civil and Environmental Engineering,
+        University of Southern California, Los Angeles, CA 90089, USA.
+        {\tt\small zhexianl@usc.edu}}%
+\thanks{K. Savla is with the Sonny Astani Department of Civil and Environmental Engineering, the Daniel Epstein Department of Industrial and Systems Engineering, and the Ming Hsieh Department of Electrical and Computer Engineering University of Southern California, Los Angeles, CA 90089, USA.
+        {\tt\small ksavla@usc.edu}}%
+\thanks{K. Savla has a financial interest with Xtelligence.Inc.}
 }
 
 
@@ -75,7 +75,7 @@ FNO$^{\angle \theta}$: Extended Fourier Neural Operator for learning state and o
 \section{INTRODUCTION}
 
 
-\section{Problem Formulation}
+\section{PROBLEM FORMULATION}
 
 
 Let $P$ denote a matrix with entries $P_{j,k}, 1\leq j\leq p, 1\leq l\leq q$.
@@ -124,7 +124,7 @@ In this paper, we propose to develop a neural operator for learning explicit exp
 The key to our approach is to leverage an integral representation of optimal control in designing neural operator architecture.
 The integral representation is derived in the following section.
 
-\section{Integral representations for optimal control}
+\section{INTEGRAL REPRESENTATION FOR OPTIMAL CONTROL}
 \label{sec:integral-representation}
 To derive an integral representation for optimal control, we first present the first-order optimality conditions that are satisfied by any optimal control to \eqref{eq:objective-functional} subject to \eqref{eq:system}.
 Then, we leverage the first-order optimality conditions and the Ehrenpreis fundamental principle \cite{ehrenpreis1970fourier,treves2012ehrenpreis} to
@@ -171,7 +171,7 @@ Then, we combine this convolution solution with the Ehrenpreis-Palamodov fundame
 
 \begin{remark}
    The classical FNO is inspired by the existence of a solution $\tilde{\phi}$ in a convolution form. 
-The key ingredient in FNO is to learn the convolution operator in the Fourier space, which reduces to learning a multiplication parameter. 
+The key ingredient in FNO is to learn the convolution operator in the Fourier space, which is equivalent to learning a multiplication parameter. 
 \end{remark}
 
 The existence of $\tilde{\phi}$ does not necessarily imply that every solution to \eqref{eq:system} can be represented in a convolution form. 
@@ -260,16 +260,16 @@ k_x & k_t
 
 For the heat equation over $\RR$, it is sufficient to represent optimal control as an integral over $\RR$ as in \eqref{eq:heat-integral-representation}. 
 Note that the integrals in \eqref{eq:heat-integral-representation} can also be deformed to integrals over contours in $\CC$.
-For the heat equation over a finite interval, real domain is not enough and optimal control needs to be represented as an integral over well-constructed contours in $\CC$ in the form \eqref{eq:integral-representation}, see \cite{li2024complex}.
+For the heat equation over a finite interval, real domain is not enough and optimal control can be represented as an integral over well-constructed contours in $\CC$ in the form \eqref{eq:integral-representation}, see \cite{li2024complex}.
 % Note that $\begin{bmatrix}
 %    \phi & u
 % \end{bmatrix}^\top = e^{\im k \cdot \xi} Q_{1,1}(\xi,k)$ satisfies \eqref{eq:optimal-control-pde} for each $k\in \mc V_1$.
 \end{example}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Extended Fourier Neural Operator}
-In this section, we first present the architecture of the classical Fourier Neural Operator (FNO). Then, we propose an extended FNO architecture, called FNO$^{\im \theta}$, that is inspired by the complex integral representation in \eqref{eq:integral-representation}.
-When the phase $\theta$ is zero, FNO$^{\im \theta}$ reduces to the classical FNO.
+\section{EXTENDED FOURIER NEURAL OPERATOR}
+In this section, we first present the architecture of the classical Fourier Neural Operator (FNO). Then, we propose an extended FNO architecture, called FNO$^{\angle \theta}$, that is inspired by the complex integral representation in \eqref{eq:integral-representation}.
+When the phase $\theta$ is zero, FNO$^{\angle \theta}$ reduces to the classical FNO.
 
 \subsection{Classical FNO}
 
@@ -284,14 +284,14 @@ $\mc Q: \mc B(\Omega; \RR^{n_v}) \to \mc B(\Omega; \RR^{n_b})$ is a projection o
 and $\mc L_l: \mc B(\Omega; \RR^{n_v}) \to \mc B(\Omega; \RR^{n_v}), l=1,\ldots,L$ are nonlinear operator layers. 
 The lifting and projection operators are typically linear transformations implemented using multilayer perceptrons \cite{duruisseaux2025fourier}, and the nonlinear operator layer is of the form,
 \begin{equation}\label{eq:FNO-layer}
-   \mc L_l(v_l)(\xi) = \sigma\left(W_l v_l(\xi) + \left(\mc K_l v_l\right)(\xi)\right),
+   (\mc L_lv_l)(\xi) = \sigma\left(W_l v_l(\xi) + \left(\mc K_l v_l\right)(\xi)\right),
 \end{equation}
 where $v_l\in \mc B(\Omega; \RR^{n_v})$ is the output from the previous layer, $\sigma$ is a nonlinear activation function applied component-wise, $W_l \in \RR^{n_v \times n_v}$ is a weight matrix, and $\mc K_l:\mc B(\Omega; \RR^{n_v}) \to \mc B(\Omega; \RR^{n_v})$ is a bounded linear operator.
 
 Different types of neural operators vary by the choice of the linear operator $\mc K_l$. 
 To learn solution operators of PDEs, the linear operator $\mc K_l$ in FNO is defined as a convolution operator in the Fourier space motivated by the existence of a solution in a convolution form by Lemma~\ref{lemma:fundamental-solution}.
 Since the convolution operation is transformed to a multiplication in the Fourier space, the operator $\mc K_l$ in FNO is expressed as follows, \begin{equation}\label{eq:convolution-Kl}
-(\mc K_lv_l)(\xi) = \int_{\RR^n} e^{\im k \cdot \xi} \hat{K}_l(k) \hat{v}_l(k) \frac{dk}{2\pi},
+(\mc K_lv_l)(\xi) = \frac{1}{(2\pi)^n}\int_{\RR^n} e^{\im k \cdot \xi} \hat{K}_l(k) \hat{v}_l(k)dk,
 \end{equation}
 where $\hat{K}_l(k)\in \CC^{n_v \times n_v}$ is a matrix indexed by frequency variable $k$, $\hat{v}_l(k)$ is the Fourier transform of $v_l$.
 % \begin{equation}
@@ -309,7 +309,7 @@ Despite the motivation from linear PDEs, FNO has been successfully applied to le
 This is partially due to the expressiveness of a neural operator architecture in \eqref{eq:neural-operator}, especially when the number of layers $L$ (length) and the lifted dimension $n_v$ (width) are sufficiently large.
 In the following, we introduce an extended FNO architecture, called FNO$^{\im \theta}$, which will be shown to be more expressive than the classical FNO when $n_v$ is small in numerical experiments.
 
-\subsection{Extended FNO$^{\im \theta}$}
+\subsection{Extended FNO$^{\angle \theta}$}
 
 The key to the design of FNO is the convolution operator $\mc K_l$ in \eqref{eq:convolution-Kl} represented in the Fourier space, inspired by the existence of a solution in a convolution form, see Lemma~\ref{lemma:fundamental-solution}.
 However, not every solution to \eqref{eq:system} can be represented in a convolution form, which could potentially limit the expressiveness of FNO.
@@ -317,12 +317,12 @@ In Lemma~\ref{lemma:fundamental-principle} and Theorem~\ref{thm:integral-represe
 Comparing \eqref{eq:integral-representation} to \eqref{eq:convolution-Kl}, the integrands all contain the leading exponential term $e^{\im k \cdot \xi}$.
 This motivates us to design an extended FNO architecture, where the linear operator $\mc K_l$ in \eqref{eq:FNO-layer} is given by
 \begin{equation}\label{eq:convolution-Kl-extended}
-(\mc K_l^{\theta}v_l)(\xi) = \int_{\RR^n} e^{\im z(k,\theta_l)\cdot \xi} \hat{K}_l(k) \hat{v}_l(k) \frac{dk}{2\pi},
+(\mc K_l^{\theta}v_l)(\xi) = \frac{1}{(2\pi)^n}\int_{\RR^n} e^{\im z(k,\theta_l)\cdot \xi} \hat{K}_l(k) \hat{v}_l(k) dk,
 \end{equation}
-where $\theta_l(k) = (\theta_{l,1}(k), \ldots, \theta_{l,n}(k)), z_j(k,\theta_l) = k_je^{\im \theta_{l,j}(k)},  j=1,\ldots,n$. In other words, the original frequency variable $k$ is the modulus of the new frequency variable $z$, and we introduce a new parameter $\theta_l(k)$ to be learned as the phase of the complex variable $z$.
-When the phase $\theta_l(k)$ is zero, $\mc K_l^{\theta}$ in \eqref{eq:convolution-Kl-extended} reduces to $\mc K_l$ in \eqref{eq:convolution-Kl}.
+where $\theta_l = (\theta_{l,1}, \ldots, \theta_{l,n}), z_j(k,\theta_l) = k_je^{\im \theta_{l,j}},  j=1,\ldots,n$. In other words, the original frequency variable $k$ is the modulus of the new frequency variable $z$, and we introduce a new parameter $\theta_l$ to be learned as the phase of the complex variable $z$.
+When the phase $\theta_l$ is zero, $\mc K_l^{\theta}$ in \eqref{eq:convolution-Kl-extended} reduces to $\mc K_l$ in \eqref{eq:convolution-Kl}.
 
-In the following section, we present numerical experiments to show that introducing the new parameter $\theta$ greatly improves the expressiveness of the neural operator, especially for a small value of the lifted dimension $n_v$ for which the classical FNO may fail.
+In the following section, we present numerical experiments to show that introducing the new parameter $\theta$ greatly improves the expressiveness of the neural operator, especially for a small value of the lifted dimension $n_v$ for which the classical FNO may fail to learn state and optimal control operators for PDEs.
 
 \section{Numerical Experiments}
 
@@ -331,32 +331,34 @@ In the following section, we present numerical experiments to show that introduc
    \begin{subfigure}[t]{0.48\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/Rel_burgers_state_comparison.png}
-      \caption{Learning state}
+      \caption{\sf Learning state operator}
       \label{fig:burgers_training_error_state}
    \end{subfigure}
    \hfill
    \begin{subfigure}[t]{0.48\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/Rel_burgers_control_comparison.png}
-      \caption{Learning optimal control}
+      \caption{\sf Learning optimal control operator}
       \label{fig:burgers_training_error_control}
    \end{subfigure}
-   \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation \eqref{eq:burgers-equation}.}
+   \caption{\sf Comparison of relative mean squared errors (MSE) over all training data during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation \eqref{eq:burgers-equation}.
+   The extended FNO$\angle \theta$ achieves an order of magnitude improvement in relative MSE for both (a) and (b) over the classical FNO.}
    \label{fig:burgers_training_comparison}
 \end{figure*}
 
 In this section, we present numerical results to compare the performance of FNO and FNO$^{\angle \theta}$ in learning state and optimal control for the Burgers' equation.
-Consider the domain $\Omega = [0,1]\times[0,1]$ and the following Burgers' equation,
+Consider the domain $\Omega = \Omega_x \times \Omega_t$ where $\Omega_x = [0,1]$ and $\Omega_t=[0,0.5]$. The Burgers' equation can be written in the form,
 \begin{equation}\label{eq:burgers-equation}
    \frac{\partial \phi(x,t)}{\partial t} + \phi(x,t) \frac{\partial \phi(x,t)}{\partial x} = \nu \frac{\partial^2 \phi(x,t)}{\partial x^2} + u(x,t),
 \end{equation}
 where $\nu$ is the viscosity coefficient.
+We choose a small value of $\nu=0.05$ that generates nonsmooth-like shock wave behavior to increase complexity for training neural operators.
 We impose the following initial and boundary conditions for \eqref{eq:burgers-equation} to ensure the uniqueness of the solution,
 \begin{equation}\label{eq:burgers-initial-bondition}
    \phi(x,0) = \phi_0(x), \quad x\in [0,1].
 \end{equation}
 \begin{equation}\label{eq:burgers-boundary-condition}
-   \phi(0,t) = g(t), \phi(1,t) = h(t), \quad t\in [0,1],
+   \phi(0,t) = g(t), \phi(1,t) = h(t), \quad t\in [0,0.5],
 \end{equation}
 where $\phi_0, g, h$ are given smooth functions.
 
@@ -366,20 +368,23 @@ Therefore, the integral representation in Theorem~\ref{thm:integral-representati
 However, the expressiviness of the neural operator architecture in \eqref{eq:neural-operator} allows us to learn approximated representations for solution and optimal control operators of \eqref{eq:burgers-equation} using FNO or FNO$^{\angle \theta}$. 
 
 \subsection{Learning state operator}
-\begin{figure}
+\label{sec:numerical-state-operator}
+\begin{figure}[b]
    \centering
    \begin{subfigure}[t]{0.23\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/burgers_state_example_24_real_frequency.png}
-      \caption{FNO}
+      \caption{\sf FNO}
+      \label{fig:burgers_state_comparison_FNO}
    \end{subfigure}
    \hfill
    \begin{subfigure}[t]{0.23\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/burgers_state_example_24_complex_frequency.png}
-      \caption{FNO$^{\angle \theta}$}
+      \caption{\sf FNO$^{\angle \theta}$}
+      \label{fig:burgers_state_comparison_extended_FNO}
    \end{subfigure}
-   \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation.}
+   \caption{\sf Learning state operator: comparison of the absolute error between the neural operator output and the training data for a particular boundary condition.}
    \label{fig:burgers_state_comparison}
 \end{figure}
 
@@ -387,38 +392,61 @@ First, we train neural operators of the form \eqref{eq:neural-operator} to learn
 We follow a supervised learning approach as in \cite{li2020fourier}, where we minimize the mean squared error (MSE) between the predicted state and the true state over a training dataset.
 To generate the training dataset, we fix the initial condition as $\phi_0(x) = \sin(\pi x)$ and randomly sample the boundary conditions $g(t), h(t)$ from a Gaussian random field \cite{Rasmussen2004} with the length scale $\ell=0.15$ and standard deviation $\sigma=1$. 
 Then, we solve the Burgers' equation \eqref{eq:burgers-equation} with the sampled boundary conditions using the finite difference method following \cite{li2020fourier} to obtain the corresponding state $\phi(x,t)$ in $\Omega$, which serves as the ground truth for training.
+The training dataset consists of 50 state trajectories under different sampled boundary conditions.
 
 For both FNO and FNO$^{\angle \theta}$, we use the Gaussian Error Linear Unit (GELU) activation function for $\sigma$ and batch normalization following \cite{duruisseaux2025fourier}. The number of Fourier layers is set to $L=4$, according to the recommendation in \cite[Section 4.3]{duruisseaux2025fourier}.
 The lifted dimension is set to $n_v=n_a$. 
 The lifted dimension $n_v$ determines the expressive capacity of the neural operator. Increasing the lifted dimension allows the neural operator to represent more complex relations in the data, but comes at the cost of increased computational complexity and memory usage \cite{duruisseaux2025fourier}.
 In our experiments, we set $n_v$ to be the same as the input dimension $n_a$ to stress test the performance of FNO and FNO$^{\angle \theta}$.
 
-To implement the operators \eqref{eq:convolution-Kl} and \eqref{eq:convolution-Kl-extended}, we discretize the Fourier space and learn the parameters $\hat{K}_l(k)$ and $\theta_l(k)$ for a finite number of frequencies $k_m, m= -M, \ldots, M$.
-Then, the integrals in \eqref{eq:convolution-Kl} and \eqref{eq:convolution-Kl-extended} are approximated as sums over the discretized frequencies, similar to the discrete Fourier series.
-In practice, a large value of $M$ typically introduces more errors during the training \cite[Section 4.2]{duruisseaux2025fourier}, and we set $M=4$ in our experiments.
+To implement the operators \eqref{eq:convolution-Kl} and \eqref{eq:convolution-Kl-extended}, we discretize the Fourier space and learn the parameters $\hat{K}_l(k)$ and $\theta_l(k)$ for a finite number of frequencies $k_m, m= -M, -M +1, \ldots, M$.
+Then, the integrals in \eqref{eq:convolution-Kl} and \eqref{eq:convolution-Kl-extended} are approximated as sums over the discretized frequencies.
+To be consistent with \cite{li2020fourier}, we choose the frequency $k_m \in \mathbb{Z}$, which leads to the form of discrete Fourier series.
+In practice, a large value of $M$ typically introduces more errors during the training \cite[Section 4.2]{duruisseaux2025fourier}, and we set $M=4$ in our experiments, i.e., $k_m = m, m=-4, -3,\ldots, 4$.
 
-Figure~\ref{fig:burgers_training_error_state} compares the relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$.
+Figure~\ref{fig:burgers_training_error_state} compares the relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for learning state operator.
+The values of relative MSE after training are 0.039 and 0.0089 for the classical FNO and the extended FNO$^{\angle \theta}$, respectively, showing an order of magnitude improvement with the phase parameter.
+To gain further insights on the improvement, Figure~\ref{fig:burgers_state_comparison} shows the absolute error between the outputs from trained neural operators and the training data for a particular boundary condition.
+It can be seen from Figure~\ref{fig:burgers_state_comparison_FNO} that most of the errors for the classical FNO are concentrated on the four boundaries $x=0, x=1, t=0, t=0.5$.
+This is because discretizing the Fourier transform \eqref{eq:convolution-Kl} with integer frequency $k_m$ results in a Fourier series, and the Fourier series generates periodic boundary values that are inconsistent with the input boundary condition.
+It is possible for the classical FNO to approximate non-periodic boundary conditions using the weight matrix $W_l$ in the operator layer \eqref{eq:FNO-layer} \cite{li2020fourier}; however, a large value of the lifted dimension $n_v$ is needed to increase the expressivity of the neural operator.
+In contrast, Figure~\ref{fig:burgers_state_comparison_extended_FNO} shows that the extended FNO$^{\angle \theta}$ generates boundary values that are more consistent with the input boundary conditions than the classical FNO.
+This is because extending the frequency $k$ in \eqref{eq:convolution-Kl} to complex variable $z$ in \eqref{eq:convolution-Kl-extended} allows representing a richer class of PDE solutions in potentially bounded domains by Lemma~\ref{lemma:fundamental-principle}.
 
 
 \subsection{Learning optimal control operator}
 
-\begin{figure}
+In addition to learning state operator, we also compare the performance of FNO and FNO$^{\angle \theta}$ for learning optimal control operator of the burgers' equation \eqref{eq:burgers-equation}.
+Following the same setting in Section~\ref{sec:numerical-state-operator}, we generate the training dataset for learning operators that map boundary conditions to optimal control.
+The boundary conditions are sampled from the same Gaussian random field in Section~\ref{sec:numerical-state-operator}, and the corresponding optimal control is computed using the adjoint method in \cite{}.
+
+\begin{figure}[t]
    \centering
    \begin{subfigure}[t]{0.23\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/burgers_control_example_24_real_frequency.png}
-      \caption{FNO}
+      \caption{\sf FNO}
+      \label{fig:burgers_control_comparison_FNO}
    \end{subfigure}
    \hfill
    \begin{subfigure}[t]{0.23\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/burgers_control_example_24_complex_frequency.png}
-      \caption{FNO$^{\angle \theta}$}
+      \caption{\sf FNO$^{\angle \theta}$}
+      \label{fig:burgers_control_comparison_extended_FNO}
    \end{subfigure}
-   \caption{Comparison of relative mean squared errors (MSE) during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation.}
+   \caption{\sf Learning optimal control operator: comparison of the absolute error between the neural operator output and the training data for a particular boundary condition.}
    \label{fig:burgers_control_comparison}
    
 \end{figure}
+
+Figure~\ref{fig:burgers_training_error_control} compares the relative MSE during the training phase of FNO and FNO$^{\angle \theta}$ for learning optimal control operator.
+The values of relative MSE after training are 0.098 and 0.042 for the classical FNO and the extended FNO$^{\angle\theta}$, respectively.
+Figure~\ref{fig:burgers_control_comparison} shows the absolute error between the trained operator output and the training data for a particular boundary condition.
+As shown in Figure~\ref{fig:burgers_control_comparison_FNO}, the errors are scattered across the space-time domain $\Omega$, meaning that the classical FNO is not able to capture the complex relation between the input boundary condition and the corresponding optimal control.
+For the FNO$^{\angle \theta}$, the absolute error is largely reduced for most part of the domain except for the top area close to the boundary $x=1$.
+Further investigation is needed to analyze the cause of concentrated error in this area.
+
 
 % \begin{figure*}
 %    \centering
@@ -435,7 +463,7 @@ Figure~\ref{fig:burgers_training_error_state} compares the relative mean squared
 %    \includegraphics[width=\textwidth]{fig/bc_example_49_comparison.png}
 %    \caption{Numerical results for the one-dimensional heat equation.}
 % \end{figure*}
-\addtolength{\textheight}{-3cm}   % This command serves to balance the column lengths
+% \addtolength{\textheight}{-3cm}   % This command serves to balance the column lengths
                                   % on the last page of the document manually. It shortens
                                   % the textheight of the last page by a suitable amount.
                                   % This command does not take effect until the next page
@@ -449,13 +477,18 @@ Figure~\ref{fig:burgers_training_error_state} compares the relative mean squared
 \section{CONCLUSIONS AND FUTURE WORKS}
 
 \subsection{Conclusions}
-
+We analyze the representations for state and optimal control of systems governed by linear partial differential equations with constant coefficients.
+For this class of distributed parameter systems, we show that state and optimal control can be represented in terms of integrals over the complex domain involving the same exponential term as in the inverse Fourier transform. Therefore, such representations can be regarded as extending the Fourier frequency space from real to complex domains.
+We use this insight to redesign the convolution operator in FNO, originally represented using the inverse Fourier transform. 
+We introduce a new complex variable in the inverse transform, where the modulus is the original real frequency, and the phase is a new neural operator parameter to be learned. 
+Numerical experiments for learning state and optimal control operators of the nonlinear burgers' equation illustrate that order of magnitude improvement for the training error can be achieved by introducing the phase parameter.
+Higher consistency between output boundary values and the given non-periodic boundary conditions is also observed comparing the extended FNO$^{\angle \theta}$ to the classical FNO.
 
 \subsection{Future Works}
-
+So far, we have only evaluated the performance of the extended FNO$^{\angle \theta}$ for a single one-dimensional PDE. We plan to test the performance on extensive benchmarks (see for example \cite{takamoto2022pdebench}) for various types of PDEs. Beyond supervised settings, it would also be interesting to investigate unsupervised training schemes since optimal control data are usually not accessible in practice.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{ACKNOWLEDGMENTS}
+% \section{ACKNOWLEDGMENTS}
 
 
 
