@@ -25,7 +25,7 @@
 %\usepackage{amssymb}  % assumes amsmath package installed
 
 \title{\LARGE \bf
-FNO$^{\angle \theta}$: Extended Fourier Neural Operator for learning state and optimal control of distributed parameter systems
+FNO$^{\angle \theta}$: Extended Fourier neural operator for learning state and optimal control of distributed parameter systems
 }
 
 %\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
@@ -74,6 +74,39 @@ FNO$^{\angle \theta}$: Extended Fourier Neural Operator for learning state and o
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{INTRODUCTION}
 
+Distributed parameter systems, such as systems governed by partial differential equations, are of great importance in various scientific and engineering fields, including fluid dynamics, climate modeling, and control of physical processes.
+The domain of such systems typically involves both temporal and spatial dimensions, making prediction and control tasks significantly harder than finite-dimensional systems.
+On one hand, the state space of distributed parameter systems is infinite-dimensional, for which optimal control methods have been developed \cite{lions1970optimal,hinze2008optimization}, but often requiring significant computational resources even for small-scale systems.
+On the other hand,
+discretizing the spatial domain, also known as spatially lumping the system, leads to finite-dimensional approximation, for which a rich set of tools and methods have been developed for optimal control \cite{bryson2018applied}. 
+However, the tradeoff between accuracy and discretization size needs to be carefully investigated to balance the computational efficiency and approximation error for the lumped system.
+
+Recently, there has been a surge of interest in using neural operators to learn solution operators for PDEs, due to the potential in learning fast and accurate surrogate infinite-dimensional models.
+Neural operators are mappings between function spaces represented in the form of neural networks \cite{kovachki2023neural}, e.g., from coefficient functions or boundary conditions to PDE solutions.
+Every layer in the neural network consists of an integral operator that varies between different types of neural operators.
+Among all different neural operators, the Fourier neural operator (FNO) \cite{li2020fourier} uses a convolution operator represented in the Fourier space. 
+This simple architecture has been found to provide the smallest approximation errors for solutions of various PDEs \cite{takamoto2022pdebench} and to successfully reproduce complicated physical phenomena such as turbulent flows \cite{li2020fourier}.
+In addition to solving PDEs, neural operators have also been used to assist control design for PDEs such as boundary control with backstepping methods \cite{}
+
+The key motivation of using the convolution operator in FNO is the fact that every linear PDE in $\mathbb{R}^n$ with constant coefficients has an elementary solution in convolution form, following the fundamental solution independently established by Ehrenpreis \cite{ehrenpreis1954solution} and Malgrange \cite{malgrange1956existence}.
+However, solutions in bounded domains with non-periodic boundary conditions are not in convolution form.
+The limitation of the convolution operator becomes apparent when implemented as a Fourier series, which is inherently periodic.
+Nevertheless, this limitation can be mitigated in practice using additional parameters in neural operators \cite{li2020fourier} or Fourier continuation methods \cite{ganeshram2022fc}.
+
+Although the convolution form is limited to systems without boundaries, additional structures for solution representations have been established for convex (potentially bounded) domains.
+Specifically, the Ehrenpreis-Palamodov fundamental principle \cite{ehrenpreis1970fourier,palamodov1970linear} states that any solution to linear PDEs in a convex subset of $\RR^n$ with constant coefficients can be represented as an integral of exponential functions multiplied by polynomials over structured subsets of $\CC^n$.
+The proof of this result is nonconstructive and explicit expressions for such an integral representation are only available for one or two-dimensional space using the Fokas method \cite{fokas1997unified,fokas2008unified,deconinck2014method}.
+Despite the abstract nature of the representation, the exponential term in the integral representation of the fundamental principle is in the same form of the inverse Fourier transform, whereas the former integral is over complex domains.
+\textcolor{blue}{Since the FNO represent the convolution operator in the Fourier space as the inverse Fourier transform, a natural step to use the fundamental principle in neural operator is to extend the frequency variable in FNO convolution operator to the complex domain and learn the phase of the complex variable as an additional parameter in the neural operator architecture. }
+
+In this paper, we first show that in addition to solutions, linear quadratic optimal control for linear PDEs with constant coefficients can also be represented in a similar integral form as the fundamental principle.
+Then, we propose an extended FNO architecture, called FNO$^{\angle \theta}$, by introducing a new parameter $\theta$ as the phase of the complex variable in the convolution operator of FNO, following the complex integral representation of state and optimal control. \textcolor{blue}{\ldots}
+
+We conclude this section by introducing key notations used in the paper. We use $\RR, \RR_+, \CC, \ZZ, \NN$ to denote the sets of real numbers, positive real numbers, complex numbers, integers, and natural numbers, respectively.
+We use $\text{C}^\infty(\Omega)$ and $\text{L}^2(\Omega)$ to denote the set of infinitely differentiable functions and square-integrable functions defined on $\Omega$, respectively.
+The convolution operator is denoted by $\ast$.
+The composition of two operators $\mc A$ and $\mc B$ is denoted by $\mc A \circ \mc B$.
+
 
 \section{PROBLEM FORMULATION}
 
@@ -82,7 +115,7 @@ Let $P$ denote a matrix with entries $P_{j,k}, 1\leq j\leq p, 1\leq l\leq q$.
 Each entry $P_{j,l}$ is a polynomial function in $\CC^n$. 
 Let $D_j = -\im \partial/\partial_{\xi_j}, j= 1, \ldots, n$, and $D = (D_1, \ldots, D_n)$. 
 Then, $P(D)$ is a matrix of linear partial differential operators with constant coefficients.
-Following this notation, we consider the system of inhomogeneous PDEs in a convex open subset $\Omega$ of $\RR^n$ of the form,
+Following this notation, we consider the system of inhomogeneous PDEs in a convex and open domain $\Omega\subseteq \RR^n$, of the form,
 \begin{equation}\label{eq:system}
 P(D) \phi = u,  
 \end{equation}
@@ -91,14 +124,14 @@ or, more explicitly,
 \sum_{l=1}^q P_{j,l}(-\im \partial/\partial_{\xi_1}, \ldots, -\im \partial/\partial_{\xi_n}) \phi_l = u_j, \quad j=1, \ldots, p,
 \end{equation} 
 where $\phi$ is the state and $u$ is the control input.
-In this paper, we focus on smooth functions $u_j$ and $\phi_l$ in $\mc L^2(\Omega)\cap \mc C^\infty(\Omega), j=1,\ldots,p$ and $l=1,\ldots,q$.
+In this paper, we focus on smooth functions $u_j$ and $\phi_l$ in $\text{L}^2(\Omega)\cap \text{C}^\infty(\Omega), j=1,\ldots,p$ and $l=1,\ldots,q$.
 Note that the system \eqref{eq:system} has solutions in more general spaces, such as the space of distributions \cite{treves2012ehrenpreis}.
 \begin{remark}
    In practice, the domain $\Omega$ can either denote a spatial domain or a product of a spatial domain and a time interval, i.e., $\Omega = \Omega_x \times \Omega_t$ where $\Omega_x \subseteq \RR^{n-1}$ and $\Omega_t \subseteq \RR_+$.
    For brevity, we use a single variable $\xi$ to denote a point in $\Omega$ and do not distinguish between spatial and temporal components.
 \end{remark}
 \begin{remark}
-   Appropriate boundary conditions are typically specified to ensure the uniqueness of the solution to the system \eqref{eq:system}.
+   Appropriate boundary conditions are needed to ensure the uniqueness of the solution to the system \eqref{eq:system}.
    We focus on general solutions to \eqref{eq:system} first and postpone the discussion of boundary conditions to numerical experiments.
 \end{remark}
 \begin{example}
@@ -162,19 +195,19 @@ Substituting the last equation for $u^*$ into the first equation in \eqref{eq:op
 \end{equation}
 Note that \eqref{eq:optimal-control-pde} is a system of linear PDEs with constant coefficients and can be written in a similar form as \eqref{eq:system}. 
 
-In the following, we first present the existence of a solution to \eqref{eq:system} in a convolution form.
+In the following, we first present the existence of a solution to \eqref{eq:system} in convolution form.
 Then, we combine this convolution solution with the Ehrenpreis-Palamodov fundamental principle \cite{ehrenpreis1970fourier,palamodov1970linear} to derive an integral representation for optimal control.
 
 \begin{lemma}[Theorem 2.11 in \cite{stein2011functional}]\label{lemma:fundamental-solution}
-   There exists a distribution $\tilde{E}$ such that $P(D) \tilde{E} = \delta$, where $\delta$ is the Dirac delta function. Moreover, the convolution of $\tilde{E}$ with the control input $u$, i.e., $\tilde{\phi} = \tilde{E} \ast u$, is a solution to \eqref{eq:system}.
+   For $\Omega = \mathbb{R}^n$, there exists a distribution $\tilde{E}$ such that $P(D) \tilde{E} = \delta$, where $\delta$ is the Dirac delta function. Moreover, the convolution of $\tilde{E}$ with the control input $u$, i.e., $\tilde{\phi} = \tilde{E} \ast u$, is a solution to \eqref{eq:system}.
 \end{lemma}
 
 \begin{remark}
-   The classical FNO is inspired by the existence of a solution $\tilde{\phi}$ in a convolution form. 
+   The classical FNO is inspired by the existence of a solution $\tilde{\phi}$ in convolution form. 
 The key ingredient in FNO is to learn the convolution operator in the Fourier space, which is equivalent to learning a multiplication parameter. 
 \end{remark}
 
-The existence of $\tilde{\phi}$ does not necessarily imply that every solution to \eqref{eq:system} can be represented in a convolution form. 
+The existence of $\tilde{\phi}$ does not necessarily imply that every solution to \eqref{eq:system} can be represented in convolution form. 
 On the other hand, the Ehrenpreis-Palamodov fundamental principle states that any solution to \eqref{eq:system} with $u=0$ can be represented as an integral of exponential functions multiplied by polynomials over the complex domain.
 
 \begin{lemma}[\cite{ehrenpreis1970fourier,palamodov1970linear,harkonen2023gaussian}]\label{lemma:fundamental-principle}
@@ -207,11 +240,13 @@ According to Lemma~\ref{lemma:fundamental-solution}, there exists a distribution
       P(D) & -I \\
        \lambda I &P(D)^\dagger 
    \end{bmatrix}
+   \left(
    E \ast
    \begin{bmatrix}
       0 \\
       \phi_d
    \end{bmatrix}
+   \right)
    = \begin{bmatrix}
       0 \\
       \phi_d
@@ -274,7 +309,7 @@ When the phase $\theta$ is zero, FNO$^{\angle \theta}$ reduces to the classical 
 \subsection{Classical FNO}
 
 Let $a,b$ denote an input and output function in Banach spaces $\mc A(\Omega; \RR^{n_a}), \mc B(\Omega; \RR^{n_b})$, respectively. 
-In this paper, we restrict our attention to the case where $\mc A$ and $\mc B$ are subspaces of $\mc L^2(\Omega)\cap\mc C^\infty(\Omega)$, respectively.
+In this paper, we restrict our attention to the case where $\mc A$ and $\mc B$ are subspaces of $\text{L}^2(\Omega)\cap\text{C}^\infty(\Omega)$, respectively.
 Following \cite{li2020fourier,kovachki2021universal}, we consider a neural operator $\mc N(a): \mc A \to \mc B$ of the form
 \begin{equation}\label{eq:neural-operator}
    \mc N(a)= \mc Q \circ \mc L_L \circ \mc L_{L-1} \circ \cdots \circ \mc L_1 \circ \mc R(a),
@@ -289,7 +324,7 @@ The lifting and projection operators are typically linear transformations implem
 where $v_l\in \mc B(\Omega; \RR^{n_v})$ is the output from the previous layer, $\sigma$ is a nonlinear activation function applied component-wise, $W_l \in \RR^{n_v \times n_v}$ is a weight matrix, and $\mc K_l:\mc B(\Omega; \RR^{n_v}) \to \mc B(\Omega; \RR^{n_v})$ is a bounded linear operator.
 
 Different types of neural operators vary by the choice of the linear operator $\mc K_l$. 
-To learn solution operators of PDEs, the linear operator $\mc K_l$ in FNO is defined as a convolution operator in the Fourier space motivated by the existence of a solution in a convolution form by Lemma~\ref{lemma:fundamental-solution}.
+To learn solution operators of PDEs, the linear operator $\mc K_l$ in FNO is defined as a convolution operator in the Fourier space motivated by the existence of a solution in convolution form by Lemma~\ref{lemma:fundamental-solution}.
 Since the convolution operation is transformed to a multiplication in the Fourier space, the operator $\mc K_l$ in FNO is expressed as follows, \begin{equation}\label{eq:convolution-Kl}
 (\mc K_lv_l)(\xi) = \frac{1}{(2\pi)^n}\int_{\RR^n} e^{\im k \cdot \xi} \hat{K}_l(k) \hat{v}_l(k)dk,
 \end{equation}
@@ -308,23 +343,6 @@ In summary, the parameters to be learned in FNO include the weight matrices $W_l
 Despite the motivation from linear PDEs, FNO has been successfully applied to learning solution operators of all different types of nonlinear PDEs, with applications in various fields \cite{li2020fourier,kovachki2021universal,duruisseaux2025fourier}.
 This is partially due to the expressiveness of a neural operator architecture in \eqref{eq:neural-operator}, especially when the number of layers $L$ (length) and the lifted dimension $n_v$ (width) are sufficiently large.
 In the following, we introduce an extended FNO architecture, called FNO$^{\im \theta}$, which will be shown to be more expressive than the classical FNO when $n_v$ is small in numerical experiments.
-
-\subsection{Extended FNO$^{\angle \theta}$}
-
-The key to the design of FNO is the convolution operator $\mc K_l$ in \eqref{eq:convolution-Kl} represented in the Fourier space, inspired by the existence of a solution in a convolution form, see Lemma~\ref{lemma:fundamental-solution}.
-However, not every solution to \eqref{eq:system} can be represented in a convolution form, which could potentially limit the expressiveness of FNO.
-In Lemma~\ref{lemma:fundamental-principle} and Theorem~\ref{thm:integral-representation}, we show that any state and optimal control of \eqref{eq:system} can be represented in a form involving a complex integral, see \eqref{eq:ehrenpreis-representation}--\eqref{eq:integral-representation}.
-Comparing \eqref{eq:integral-representation} to \eqref{eq:convolution-Kl}, the integrands all contain the leading exponential term $e^{\im k \cdot \xi}$.
-This motivates us to design an extended FNO architecture, where the linear operator $\mc K_l$ in \eqref{eq:FNO-layer} is given by
-\begin{equation}\label{eq:convolution-Kl-extended}
-(\mc K_l^{\theta}v_l)(\xi) = \frac{1}{(2\pi)^n}\int_{\RR^n} e^{\im z(k,\theta_l)\cdot \xi} \hat{K}_l(k) \hat{v}_l(k) dk,
-\end{equation}
-where $\theta_l = (\theta_{l,1}, \ldots, \theta_{l,n}), z_j(k,\theta_l) = k_je^{\im \theta_{l,j}},  j=1,\ldots,n$. In other words, the original frequency variable $k$ is the modulus of the new frequency variable $z$, and we introduce a new parameter $\theta_l$ to be learned as the phase of the complex variable $z$.
-When the phase $\theta_l$ is zero, $\mc K_l^{\theta}$ in \eqref{eq:convolution-Kl-extended} reduces to $\mc K_l$ in \eqref{eq:convolution-Kl}.
-
-In the following section, we present numerical experiments to show that introducing the new parameter $\theta$ greatly improves the expressiveness of the neural operator, especially for a small value of the lifted dimension $n_v$ for which the classical FNO may fail to learn state and optimal control operators for PDEs.
-
-\section{Numerical Experiments}
 
 \begin{figure*}[t]
    \centering
@@ -345,6 +363,24 @@ In the following section, we present numerical experiments to show that introduc
    The extended FNO$\angle \theta$ achieves an order of magnitude improvement in relative MSE for both (a) and (b) over the classical FNO.}
    \label{fig:burgers_training_comparison}
 \end{figure*}
+
+\subsection{Extended FNO$^{\angle \theta}$}
+
+The key to the design of FNO is the convolution operator $\mc K_l$ in \eqref{eq:convolution-Kl} represented in the Fourier space, inspired by the existence of a solution in convolution form, see Lemma~\ref{lemma:fundamental-solution}.
+However, not every solution to \eqref{eq:system} can be represented in convolution form, which could potentially limit the expressiveness of FNO.
+In Lemma~\ref{lemma:fundamental-principle} and Theorem~\ref{thm:integral-representation}, we show that any state and optimal control of \eqref{eq:system} can be represented in a form involving a complex integral, see \eqref{eq:ehrenpreis-representation}--\eqref{eq:integral-representation}.
+Comparing \eqref{eq:integral-representation} to \eqref{eq:convolution-Kl}, the integrands all contain the leading exponential term $e^{\im k \cdot \xi}$.
+This motivates us to design an extended FNO architecture, where the linear operator $\mc K_l$ in \eqref{eq:FNO-layer} is given by
+\begin{equation}\label{eq:convolution-Kl-extended}
+(\mc K_l^{\theta}v_l)(\xi) = \frac{1}{(2\pi)^n}\int_{\RR^n} e^{\im z(k,\theta_l)\cdot \xi} \hat{K}_l(k) \hat{v}_l(k) dk,
+\end{equation}
+where $\theta_l = (\theta_{l,1}, \ldots, \theta_{l,n}), z_j(k,\theta_l) = k_je^{\im \theta_{l,j}},  j=1,\ldots,n$. In other words, the original frequency variable $k$ is the modulus of the new frequency variable $z$, and we introduce a new parameter $\theta_l$ to be learned as the phase of the complex variable $z$.
+When the phase $\theta_l$ is zero, $\mc K_l^{\theta}$ in \eqref{eq:convolution-Kl-extended} reduces to $\mc K_l$ in \eqref{eq:convolution-Kl}.
+
+In the following section, we present numerical experiments to show that introducing the new parameter $\theta$ greatly improves the expressiveness of the neural operator, especially for a small value of the lifted dimension $n_v$ for which the classical FNO may fail to learn state and optimal control operators for PDEs.
+
+
+\section{Numerical Experiments}
 
 In this section, we present numerical results to compare the performance of FNO and FNO$^{\angle \theta}$ in learning state and optimal control for the Burgers' equation.
 Consider the domain $\Omega = \Omega_x \times \Omega_t$ where $\Omega_x = [0,1]$ and $\Omega_t=[0,0.5]$. The Burgers' equation can be written in the form,
