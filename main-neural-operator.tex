@@ -48,7 +48,7 @@ FNO$^{\angle \theta}$: Extended Fourier neural operator for learning state and o
 \thanks{Z. Li is with the Sonny Astani Department of Civil and Environmental Engineering,
         University of Southern California, Los Angeles, CA 90089, USA.
         {\tt\small zhexianl@usc.edu}}%
-\thanks{K. Savla is with the Sonny Astani Department of Civil and Environmental Engineering, the Daniel Epstein Department of Industrial and Systems Engineering, and the Ming Hsieh Department of Electrical and Computer Engineering University of Southern California, Los Angeles, CA 90089, USA.
+\thanks{K. Savla is with the Sonny Astani Department of Civil and Environmental Engineering, the Daniel Epstein Department of Industrial and Systems Engineering, and the Ming Hsieh Department of Electrical and Computer Engineering, University of Southern California, Los Angeles, CA 90089, USA.
         {\tt\small ksavla@usc.edu}}%
 \thanks{K. Savla has a financial interest with Xtelligence.Inc.}
 }
@@ -66,7 +66,7 @@ FNO$^{\angle \theta}$: Extended Fourier neural operator for learning state and o
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-We propose an extended Fourier neural operator (FNO) architecture for learning state and optimal control of systems governed by partial differential equations.
+We propose an extended Fourier neural operator (FNO) architecture for learning state and linear quadratic additive optimal control of systems governed by partial differential equations.
 Using the Ehrenpreis-Palamodov fundamental principle, we show that any state and optimal control of linear PDEs with constant coefficients can be represented as an integral in the complex domain.
 The integrand of this representation involves the same exponential term as in the inverse Fourier transform, where the latter is used to represent the convolution operator in the classical FNO layer.
 Motivated by this observation, we modify the FNO layer by extending the frequency variable in the inverse Fourier transform from the real to complex domain to capture the integral representation from the fundamental principle.
@@ -90,7 +90,7 @@ Neural operators are mappings between function spaces represented in the form of
 Every layer in the neural network consists of an integral operator that varies between different types of neural operators.
 Among all different neural operators, the Fourier neural operator (FNO) \cite{li2020fourier} uses a convolution operator represented in the Fourier space. 
 This simple architecture has been found to provide the smallest approximation errors for solutions of various PDEs \cite{takamoto2022pdebench} and to successfully reproduce complicated physical phenomena such as turbulent flows \cite{li2020fourier}.
-In addition to solving PDEs, neural operators have also been used to assist control design for PDEs such as boundary control with backstepping methods \cite{bhan2023neural}
+In addition to solving PDEs, neural operators have also been used to learn optimal control operators \cite{song2026learning} and assist control design for PDEs such as boundary control with backstepping methods \cite{bhan2023neural}
 
 The key motivation of using the convolution operator in FNO is the fact that every linear PDE in $\mathbb{R}^n$ with constant coefficients has an elementary solution in convolution form, following the fundamental solution independently established by Ehrenpreis \cite{ehrenpreis1954solution} and Malgrange \cite{malgrange1956existence}.
 However, solutions in bounded domains with non-periodic boundary conditions are not in convolution form.
@@ -109,7 +109,7 @@ Since the inverse Fourier transform is used in the convolution operator in FNO, 
 The contribution of this paper is the following. First, we show that in addition to solutions, linear quadratic optimal control for linear PDEs with constant coefficients can also be represented in a similar integral form as the fundamental principle.
 Then, we propose an extended FNO architecture, called FNO$^{\angle \theta}$, by introducing a new complex variable in the inverse Fourier transform, whose modulus is the original frequency variable in FNO and phase is a new parameter $\theta$ to be learned.
 When $\theta=0$, FNO$^{\angle \theta}$ reduces to the classical FNO.
-Beyond theoretical analysis in linear PDEs, we present numerical experiments to demonstrate the performance of FNO$^{\angle \theta}$ in learning state and optimal control for nonlinear Burgers' equation, exhibiting order of magnitude improvements on training errors and more accurate predictions of non-periodic boundary values over the classical FNO.
+Beyond theoretical analysis for linear PDEs, we present numerical experiments to demonstrate the performance of FNO$^{\angle \theta}$ in learning state and optimal control for the nonlinear Burgers' equation, exhibiting order of magnitude improvements on training errors and more accurate predictions of non-periodic boundary values over the classical FNO.
 
 We conclude this section by introducing key notations used in the paper. We use $\RR, \RR_+, \CC, \ZZ, \NN$ to denote the sets of real numbers, positive real numbers, complex numbers, integers, and natural numbers, respectively.
 We use $\text{C}^\infty(\Omega)$ and $\text{L}^2(\Omega)$ to denote the set of infinitely differentiable functions and square-integrable functions defined on $\Omega$, respectively.
@@ -319,7 +319,7 @@ When the phase $\theta$ is zero, FNO$^{\angle \theta}$ reduces to the classical 
 
 Let $a,b$ denote an input and output function in Banach spaces $\mc A(\Omega; \RR^{n_a}), \mc B(\Omega; \RR^{n_b})$, respectively. 
 In this paper, we restrict our attention to the case where $\mc A$ and $\mc B$ are subspaces of $\text{L}^2(\Omega)\cap\text{C}^\infty(\Omega)$, respectively.
-Following \cite{li2020fourier,kovachki2021universal}, we consider a neural operator $\mc N(a): \mc A \to \mc B$ of the form
+Following \cite{li2020fourier,duruisseaux2025fourier}, we consider a neural operator $\mc N(a): \mc A \to \mc B$ of the form
 \begin{equation}\label{eq:neural-operator}
    \mc N(a)= \mc Q \circ \mc L_L \circ \mc L_{L-1} \circ \cdots \circ \mc L_1 \circ \mc R(a),
 \end{equation}
@@ -345,31 +345,31 @@ where $\hat{K}_l(k)\in \CC^{n_v \times n_v}$ is a matrix indexed by frequency va
    In practice, the value of input function $a$ is typically only available at a finite number of discretized spatial locations in $\Omega$.
    Also, the matrix $\hat{K}_l(k)$ is usually learned for a finite number of frequencies $k$ in the Fourier space.
 Therefore, FNO is implemented in a discretized manner, where \eqref{eq:convolution-Kl} is approximated as a finite sum. 
-We refer readers to \cite{li2020fourier,kovachki2021universal,duruisseaux2025fourier} for more details on the discretized version of FNO and other practical implementation issues.
+We refer readers to \cite{li2020fourier,duruisseaux2025fourier} for more details on the discretized version of FNO and other practical implementation issues.
 \end{remark}
 
 In summary, the parameters to be learned in FNO include the weight matrices $W_l$ and the Fourier space parameters $\hat{K}_l(k)$ for all layers $l=1,\ldots,L$. 
-Despite the motivation from linear PDEs, FNO has been successfully applied to learning solution operators of all different types of nonlinear PDEs, with applications in various fields \cite{li2020fourier,kovachki2021universal,duruisseaux2025fourier}.
+Despite the motivation from linear PDEs, FNO has been successfully applied to learning solution operators of all different types of nonlinear PDEs, with applications in various fields \cite{li2020fourier,duruisseaux2025fourier}.
 This is partially due to the expressiveness of a neural operator architecture in \eqref{eq:neural-operator}, especially when the number of layers $L$ (length) and the lifted dimension $n_v$ (width) are sufficiently large.
 In the following, we introduce an extended FNO architecture, called FNO$^{\im \theta}$, which will be shown to be more expressive than the classical FNO when $n_v$ is small in numerical experiments.
 
 \begin{figure*}[t]
    \centering
-   \begin{subfigure}[t]{0.48\textwidth}
+   \begin{subfigure}[t]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/Rel_burgers_state_comparison.png}
       \caption{\sf Learning state operator}
       \label{fig:burgers_training_error_state}
    \end{subfigure}
    \hfill
-   \begin{subfigure}[t]{0.48\textwidth}
+   \begin{subfigure}[t]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{fig/Rel_burgers_control_comparison.png}
       \caption{\sf Learning optimal control operator}
       \label{fig:burgers_training_error_control}
    \end{subfigure}
    \caption{\sf Comparison of relative mean squared errors (MSE) over all training data during the training phase of FNO and FNO$^{\angle \theta}$ for the Burgers' equation \eqref{eq:burgers-equation}.
-   The extended FNO$\angle \theta$ achieves an order of magnitude improvement in relative MSE for both (a) and (b) over the classical FNO.}
+   The extended FNO$\angle \theta$ achieves an order of magnitude improvement in relative MSE over the classical FNO.}
    \label{fig:burgers_training_comparison}
 \end{figure*}
 
@@ -429,7 +429,7 @@ However, the expressiviness of the neural operator architecture in \eqref{eq:neu
       \caption{\sf FNO$^{\angle \theta}$}
       \label{fig:burgers_state_comparison_extended_FNO}
    \end{subfigure}
-   \caption{\sf Learning state operator: comparison of the absolute error between the neural operator output and the training data for a particular boundary condition.}
+   \caption{\sf Learning state operator: comparison of the absolute error between the neural operator output and the training data for a particular boundary condition. The error for the classical FNO is concentrated on the four boundaries, whereas the extended FNO generates more accurate boundary values.}
    \label{fig:burgers_state_comparison}
 \end{figure}
 
@@ -472,7 +472,8 @@ This is because extending the frequency $k$ in \eqref{eq:convolution-Kl} to comp
       \caption{\sf FNO$^{\angle \theta}$}
       \label{fig:burgers_control_comparison_extended_FNO}
    \end{subfigure}
-   \caption{\sf Learning optimal control operator: comparison of the absolute error between the neural operator output and the training data for a particular boundary condition.}
+   \caption{\sf Learning optimal control operator: comparison of the absolute error between the neural operator output and the training data for a particular boundary condition. 
+   The error for FNO is scattered across the space-time domain, whereas the error for FNO$^{\angle \theta}$ is smaller for most part of the domain.}
    \label{fig:burgers_control_comparison}
    
 \end{figure}
@@ -486,7 +487,7 @@ The boundary conditions are sampled from the same Gaussian random field in Secti
 Figure~\ref{fig:burgers_training_error_control} compares the relative MSE during the training phase of FNO and FNO$^{\angle \theta}$ for learning optimal control operator.
 The values of relative MSE after training are 0.098 and 0.042 for the classical FNO and the extended FNO$^{\angle\theta}$, respectively.
 Figure~\ref{fig:burgers_control_comparison} shows the absolute error between the trained operator output and the training data for a particular boundary condition.
-As shown in Figure~\ref{fig:burgers_control_comparison_FNO}, the errors are scattered across the space-time domain $\Omega$, meaning that the classical FNO is not able to capture the complex relation between the input boundary condition and the corresponding optimal control.
+As shown in Figure~\ref{fig:burgers_control_comparison_FNO}, the error is scattered across the space-time domain $\Omega$, meaning that the classical FNO is not able to capture the complex relation between the input boundary condition and the corresponding optimal control.
 For the FNO$^{\angle \theta}$, the absolute error is largely reduced for most part of the domain except for the top area close to the boundary $x=1$.
 Further investigation is needed to analyze the cause of concentrated error in this area.
 
